@@ -13,11 +13,10 @@ namespace NCoreUtils.Text
 
         static string GetEscapeSequence(char c) => "\\u" + ((int)c).ToString("X4");
 
-        readonly Regex _delimiters;
+        static bool IsSimple(char ch)
+            => ('a' <= ch && 'z' >= ch) || ('0' <= ch && '9' >= ch);
 
-        readonly Regex _nonChars;
-
-        readonly ImmutableArray<(Regex regex, ICharacterSimplifier simplifier)> _simplifiableCharacters;
+        readonly ImmutableDictionary<char, string> _map;
 
         public char Delimiter { get; }
 
@@ -27,28 +26,85 @@ namespace NCoreUtils.Text
             {
                 throw new ArgumentNullException(nameof(characterSimplifiers));
             }
+            var mapBuilder = ImmutableDictionary.CreateBuilder<char, string>();
+            foreach (var characterSimplifier in characterSimplifiers)
+            {
+                foreach (var key in characterSimplifier.Keys)
+                {
+                    mapBuilder[key] = characterSimplifier[key];
+                }
+            }
+            _map = mapBuilder.ToImmutable();
             Delimiter = delimiter;
-            _simplifiableCharacters = characterSimplifiers
-                .Select(simplifier => (new Regex($"[{String.Join("|", simplifier.Keys.Select(key => key.ToString()))}]", RegexOptions.Compiled), simplifier))
-                .ToImmutableArray();
-            var ud = GetEscapeSequence(delimiter);
-            _delimiters = new Regex($"{ud}+", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
-            _nonChars = new Regex($"[^a-z0-9{ud}]+", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
         }
 
         public Simplifier(char delimiter, params ICharacterSimplifier[] characterSimplifiers)
             : this(delimiter, (IEnumerable<ICharacterSimplifier>)characterSimplifiers)
         { }
 
+        void Simplify(ref SpanBuilder builder, string source)
+        {
+            var currentCulture = CultureInfo.CurrentCulture;
+            var src = source.AsSpan();
+            var isDelimiter = false;
+            var srcLength = src.Length;
+            var lastIndex = srcLength - 1;
+            for (var i = 0; i < srcLength; ++i)
+            {
+                var ch = currentCulture.TextInfo.ToLower(src[i]);
+                if (_map.TryGetValue(ch, out var replacement))
+                {
+                    builder.Append(replacement);
+                    isDelimiter = false;
+                }
+                else
+                {
+                    if (!IsSimple(ch))
+                    {
+                        ch = Delimiter;
+                    }
+                    if (Delimiter == ch)
+                    {
+                        if (builder.Length != 0 && i < lastIndex && !isDelimiter)
+                        {
+                            builder.Append(ch);
+                            isDelimiter = true;
+                        }
+                    }
+                    else
+                    {
+                        builder.Append(ch);
+                        isDelimiter = false;
+                    }
+                }
+            }
+        }
+
         public string Simplify(string source)
         {
-            // convert all language specific convertable characters.
-            var chsimplified = _simplifiableCharacters.Aggregate(source.ToLower(CultureInfo.CurrentCulture), (input, s) => s.regex.Replace(input, match => s.simplifier[match.Value[0]]));
-            // eliminate all non-converted characters except a-z0-9 + delemiter.
-            var onlyChars = _nonChars.Replace(chsimplified, Delimiter.ToString());
-            // ensure single delimiter is used and no delimiter is present at the beginning or at the end.
-            var trimmed = _delimiters.Replace(onlyChars, Delimiter.ToString()).Trim(Delimiter);
-            return trimmed;
+            if (source.Length <= 4096)
+            {
+                Span<char> buffer = stackalloc char[8192];
+                SpanBuilder builder = new SpanBuilder(buffer);
+                Simplify(ref builder, source);
+                var length = builder.Length;
+                while (length > 0 && buffer[length - 1] == Delimiter)
+                {
+                    --length;
+                }
+                return buffer.Slice(0, length).ToString();
+            }
+            {
+                Span<char> buffer = new char[source.Length * 2];
+                SpanBuilder builder = new SpanBuilder(buffer);
+                Simplify(ref builder, source);
+                var length = builder.Length;
+                while (length > 0 && buffer[length - 1] == Delimiter)
+                {
+                    --length;
+                }
+                return buffer.Slice(0, length).ToString();
+            }
         }
     }
 }
