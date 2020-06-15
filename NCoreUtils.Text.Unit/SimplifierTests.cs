@@ -3,6 +3,7 @@ using Xunit;
 
 namespace NCoreUtils.Text.Unit
 {
+    [Obsolete]
     public class SimplifierTests
     {
         [Theory]

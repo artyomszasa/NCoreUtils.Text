@@ -1,0 +1,18 @@
+using System;
+#if NETCOREAPP3_0 || NETCOREAPP3_1
+using System.Text;
+#endif
+
+namespace NCoreUtils.Text
+{
+    internal static class SpanBuilderRuneExtensions
+    {
+        public static bool TryAppend(this ref SpanBuilder builder, in Rune rune)
+        {
+            Span<char> buffer = stackalloc char[4];
+            var size = rune.EncodeToUtf16(buffer);
+            ReadOnlySpan<char> slice = buffer.Slice(0, size);
+            return builder.TryAppend(slice);
+        }
+    }
+}

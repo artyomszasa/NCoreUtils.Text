@@ -1,21 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1;net461</TargetFrameworks>
-    <Version>2.0.0</Version>
+    <TargetFrameworks>netstandard2.1;netstandard2.0;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <Version>3.0.0-alpha00</Version>
+    <RootNamespace>NCoreUtils</RootNamespace>
   </PropertyGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('netcoreapp'))">
+    <Compile Remove="Text\Rune.cs" />
+    <Compile Remove="Text\UnicodeUtility.cs" />
+    <Compile Remove="Text\Utf16Utility.cs" />
+    <Compile Remove="Text\RuneEnumerationExtensions.cs" />
+    <Compile Remove="Text\SpanRuneEnumerator.cs" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NCoreUtils.Text.Abstractions\NCoreUtils.Text.Abstractions.csproj" />
+    <ProjectReference Include="..\NCoreUtils.Text.Interop\NCoreUtils.Text.Interop.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.Extensions.Memory" Version="1.0.0" />
+    <PackageReference Include="NCoreUtils.Extensions.Memory" Version="1.0.7" />
   </ItemGroup>
-  <!-- mono fix -->
-  <PropertyGroup>
-    <TargetIsMono Condition="$(TargetFramework.StartsWith('net4')) and '$(OS)' == 'Unix'">true</TargetIsMono>
-    <BaseFrameworkPathOverrideForMono Condition="'$(BaseFrameworkPathOverrideForMono)' == '' AND '$(TargetIsMono)' == 'true' AND EXISTS('/usr/lib/mono')">/usr/lib/mono</BaseFrameworkPathOverrideForMono>
-    <FrameworkPathOverride Condition="'$(BaseFrameworkPathOverrideForMono)' != '' AND '$(TargetFramework)' == 'net452'">$(BaseFrameworkPathOverrideForMono)/4.5.2-api</FrameworkPathOverride>
-    <FrameworkPathOverride Condition="'$(BaseFrameworkPathOverrideForMono)' != '' AND '$(TargetFramework)' == 'net461'">$(BaseFrameworkPathOverrideForMono)/4.6.1-api</FrameworkPathOverride>
-    <EnableFrameworkPathOverride Condition="'$(BaseFrameworkPathOverrideForMono)' != ''">true</EnableFrameworkPathOverride>
-    <AssemblySearchPaths Condition="'$(BaseFrameworkPathOverrideForMono)' != ''">$(FrameworkPathOverride)/Facades;$(AssemblySearchPaths)</AssemblySearchPaths>
-  </PropertyGroup>
 </Project>

@@ -3,3 +3,5 @@
 .ionide
 NCoreUtils*/bin
 NCoreUtils*/obj
+native/obj
+native/dist

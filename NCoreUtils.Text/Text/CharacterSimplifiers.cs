@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 
 namespace NCoreUtils.Text
 {
+    [Obsolete("CharacterSimplifiers will be removed in future versions, use RuneSimplifiers instead.")]
     public static class CharacterSimplifiers
     {
         public static ICharacterSimplifier Hungarian { get; } = CharacterSimplifier.FromMapping(new Dictionary<char, string>

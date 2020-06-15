@@ -1,24 +1,34 @@
+using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 
 namespace NCoreUtils.Text
 {
+    [Obsolete("CharacterSimplifier will be removed in future versions, use RuneSiplifier instead.")]
     public static class CharacterSimplifier
     {
-        sealed class ExplicitCharacterSimplifier : ICharacterSimplifier
+        private sealed class ExplicitCharacterSimplifier : ICharacterSimplifier
         {
             IReadOnlyCollection<char> ICharacterSimplifier.Keys => Keys;
 
-            public ImmutableHashSet<char> Keys { get; }
+            public HashSet<char> Keys { get; }
 
-            public ImmutableDictionary<char, string> Mapping { get; }
+            public Dictionary<char, string> Mapping { get; }
 
             public string this[char key] => Mapping[key];
 
             public ExplicitCharacterSimplifier(IEnumerable<KeyValuePair<char, string>> mapping)
             {
-                Mapping = ImmutableDictionary.CreateRange(mapping);
-                Keys = Mapping.Keys.ToImmutableHashSet();
+                #if NETSTANDARD2_1
+                Mapping = new Dictionary<char, string>(mapping);
+                #else
+                var dictionary = new Dictionary<char, string>();
+                foreach (var kv in mapping)
+                {
+                    dictionary.Add(kv.Key, kv.Value);
+                }
+                Mapping = dictionary;
+                #endif
+                Keys = new HashSet<char>(Mapping.Keys);
             }
         }
 
