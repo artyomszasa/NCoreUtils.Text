@@ -9,7 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCoreUtils.Text", "NCoreUti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCoreUtils.Text.Unit", "NCoreUtils.Text.Unit\NCoreUtils.Text.Unit.csproj", "{1FB082F8-024F-4236-92AB-A801798ECDE4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCoreUtils.Text.Interop", "NCoreUtils.Text.Interop\NCoreUtils.Text.Interop.csproj", "{93E2349F-C25F-41CD-ACCC-6E6A17A259B8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCoreUtils.Text.Libicu.Loader", "NCoreUtils.Text.Libicu.Loader\NCoreUtils.Text.Libicu.Loader.csproj", "{EE6E21E7-BEAC-4841-8D1E-F93E15963964}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCoreUtils.Text.Libicu.Static", "NCoreUtils.Text.Libicu.Static\NCoreUtils.Text.Libicu.Static.csproj", "{5CD8E59F-AD90-49F2-9047-B46C36DFD559}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -60,17 +62,29 @@ Global
 		{1FB082F8-024F-4236-92AB-A801798ECDE4}.Release|x64.Build.0 = Release|Any CPU
 		{1FB082F8-024F-4236-92AB-A801798ECDE4}.Release|x86.ActiveCfg = Release|Any CPU
 		{1FB082F8-024F-4236-92AB-A801798ECDE4}.Release|x86.Build.0 = Release|Any CPU
-		{93E2349F-C25F-41CD-ACCC-6E6A17A259B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{93E2349F-C25F-41CD-ACCC-6E6A17A259B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{93E2349F-C25F-41CD-ACCC-6E6A17A259B8}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{93E2349F-C25F-41CD-ACCC-6E6A17A259B8}.Debug|x64.Build.0 = Debug|Any CPU
-		{93E2349F-C25F-41CD-ACCC-6E6A17A259B8}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{93E2349F-C25F-41CD-ACCC-6E6A17A259B8}.Debug|x86.Build.0 = Debug|Any CPU
-		{93E2349F-C25F-41CD-ACCC-6E6A17A259B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{93E2349F-C25F-41CD-ACCC-6E6A17A259B8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{93E2349F-C25F-41CD-ACCC-6E6A17A259B8}.Release|x64.ActiveCfg = Release|Any CPU
-		{93E2349F-C25F-41CD-ACCC-6E6A17A259B8}.Release|x64.Build.0 = Release|Any CPU
-		{93E2349F-C25F-41CD-ACCC-6E6A17A259B8}.Release|x86.ActiveCfg = Release|Any CPU
-		{93E2349F-C25F-41CD-ACCC-6E6A17A259B8}.Release|x86.Build.0 = Release|Any CPU
+		{EE6E21E7-BEAC-4841-8D1E-F93E15963964}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE6E21E7-BEAC-4841-8D1E-F93E15963964}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE6E21E7-BEAC-4841-8D1E-F93E15963964}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EE6E21E7-BEAC-4841-8D1E-F93E15963964}.Debug|x64.Build.0 = Debug|Any CPU
+		{EE6E21E7-BEAC-4841-8D1E-F93E15963964}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EE6E21E7-BEAC-4841-8D1E-F93E15963964}.Debug|x86.Build.0 = Debug|Any CPU
+		{EE6E21E7-BEAC-4841-8D1E-F93E15963964}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE6E21E7-BEAC-4841-8D1E-F93E15963964}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE6E21E7-BEAC-4841-8D1E-F93E15963964}.Release|x64.ActiveCfg = Release|Any CPU
+		{EE6E21E7-BEAC-4841-8D1E-F93E15963964}.Release|x64.Build.0 = Release|Any CPU
+		{EE6E21E7-BEAC-4841-8D1E-F93E15963964}.Release|x86.ActiveCfg = Release|Any CPU
+		{EE6E21E7-BEAC-4841-8D1E-F93E15963964}.Release|x86.Build.0 = Release|Any CPU
+		{5CD8E59F-AD90-49F2-9047-B46C36DFD559}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CD8E59F-AD90-49F2-9047-B46C36DFD559}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CD8E59F-AD90-49F2-9047-B46C36DFD559}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5CD8E59F-AD90-49F2-9047-B46C36DFD559}.Debug|x64.Build.0 = Debug|Any CPU
+		{5CD8E59F-AD90-49F2-9047-B46C36DFD559}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5CD8E59F-AD90-49F2-9047-B46C36DFD559}.Debug|x86.Build.0 = Debug|Any CPU
+		{5CD8E59F-AD90-49F2-9047-B46C36DFD559}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CD8E59F-AD90-49F2-9047-B46C36DFD559}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CD8E59F-AD90-49F2-9047-B46C36DFD559}.Release|x64.ActiveCfg = Release|Any CPU
+		{5CD8E59F-AD90-49F2-9047-B46C36DFD559}.Release|x64.Build.0 = Release|Any CPU
+		{5CD8E59F-AD90-49F2-9047-B46C36DFD559}.Release|x86.ActiveCfg = Release|Any CPU
+		{5CD8E59F-AD90-49F2-9047-B46C36DFD559}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

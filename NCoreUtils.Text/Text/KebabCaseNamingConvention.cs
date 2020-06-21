@@ -18,9 +18,9 @@ namespace NCoreUtils.Text
         /// Maximum number of characters needed to store input of the specified length as kebab case string.
         /// </returns>
         public int GetMaxCharCount(int sourceCharCount)
-            => sourceCharCount % 2 == 0
+            => sourceCharCount + (sourceCharCount % 2 == 0
                 ? sourceCharCount / 2
-                : sourceCharCount / 2 + 1;
+                : sourceCharCount / 2 + 1);
 
         /// <summary>
         /// Attempts to convert name specified in <paramref name="source" /> to kebab case naming convention. On success

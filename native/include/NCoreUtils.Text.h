@@ -12,14 +12,14 @@ typedef enum
 
 DECLEXPORT
 const UNormalizer2*
-ncoreutils_text_get_normalizer(NormalizationForm normalizationForm);
+ncoreutils_text_get_normalizer(NormalizationForm normalizationForm, UErrorCode* err);
+
+// DECLEXPORT
+// int32_t
+// ncoreutils_text_normalize(const UNormalizer2* pNormalizer, const UChar* lpSrc, int32_t cwSrcLength, UChar* lpDst, int32_t cwDstLength, UErrorCode* err)
 
 DECLEXPORT
 int32_t
-ncoreutils_text_normalize(const UNormalizer2* pNormalizer, const UChar* lpSrc, int32_t cwSrcLength, UChar* lpDst, int32_t cwDstLength);
-
-DECLEXPORT
-int32_t
-ncoreutils_text_decompose(const UNormalizer2* pNormalizer, const UChar32 c, UChar *decomposition, int32_t capacity);
+ncoreutils_text_decompose(const UNormalizer2* pNormalizer, const UChar32 c, UChar *decomposition, int32_t capacity, UErrorCode* err);
 
 #endif

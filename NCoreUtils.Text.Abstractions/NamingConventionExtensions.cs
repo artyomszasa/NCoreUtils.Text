@@ -3,14 +3,14 @@ using System.Buffers;
 
 namespace NCoreUtils
 {
-    public static class StringSimplifierExtensions
+    public static class NamingConventionExtensions
     {
-        public static int Simplify(this IStringSimplifier simplifier, ReadOnlySpan<char> source, Span<char> destination)
-            => simplifier.TrySimplify(source, destination, out var written)
+        public static int Apply(this INamingConvention convention, ReadOnlySpan<char> source, Span<char> destination)
+            => convention.TryApply(source, destination, out var written)
                 ? written
                 : throw new ArgumentException("Buffer is insufficient.", nameof(destination));
 
-        public static string Simplify(this IStringSimplifier simplifier, string source)
+        public static string Apply(this INamingConvention convention, string source)
         {
             if (source is null)
             {
@@ -20,13 +20,13 @@ namespace NCoreUtils
             {
                 return string.Empty;
             }
-            var maxSize = simplifier.GetMaxCharCount(source.Length);
+            var maxSize = convention.GetMaxCharCount(source.Length);
             string result;
             // NOTE: stack allocation only used when buffer size < 32k.
             if (maxSize <= 16 * 1024)
             {
                 Span<char> buffer = stackalloc char[maxSize];
-                var written = simplifier.Simplify(source.AsSpan(), buffer);
+                var written = convention.Apply(source.AsSpan(), buffer);
                 result = buffer.Slice(0, written).ToString();
             }
             else
@@ -34,7 +34,7 @@ namespace NCoreUtils
                 var buffer = ArrayPool<char>.Shared.Rent(maxSize);
                 try
                 {
-                    var written = simplifier.Simplify(source.AsSpan(), buffer.AsSpan());
+                    var written = convention.Apply(source.AsSpan(), buffer.AsSpan());
                     result = new string(buffer, 0, written);
                 }
                 finally

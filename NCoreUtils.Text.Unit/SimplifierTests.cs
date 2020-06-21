@@ -4,7 +4,7 @@ using Xunit;
 namespace NCoreUtils.Text.Unit
 {
     [Obsolete]
-    public class SimplifierTests
+    public class SimplifierTests : TestBase
     {
         [Theory]
         [InlineData("mosogatógép", "mosogatogep")]
@@ -15,7 +15,9 @@ namespace NCoreUtils.Text.Unit
         [InlineData("русские буквы", "russkie-bukvy")]
         public void Default(string input, string expected)
         {
-            var actual = Simplifier.Default.Simplify(input);
+            var actual = DynamicSimplifier.Simplify(input);
+            Assert.Equal(expected, actual);
+            actual = StaticSimplifier.Simplify(input);
             Assert.Equal(expected, actual);
         }
     }

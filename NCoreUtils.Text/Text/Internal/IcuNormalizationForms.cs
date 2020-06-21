@@ -1,6 +1,6 @@
 namespace NCoreUtils.Text.Internal
 {
-    internal static class NormalizationForms
+    public static class IcuNormalizationForms
     {
         public const int FormC = 0x01;
 

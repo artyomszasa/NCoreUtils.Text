@@ -1,8 +1,9 @@
 TARGET?=linux-x64
 ifeq ($(TARGET),linux-x64)
+  LIBDIR=/opt/icu/lib
   GCC=gcc
-  CPP_FLAGS=
-  LD_FLAGS=-licuuc
+  CPP_FLAGS=-I/opt/icu/include
+  LD_FLAGS=-Wl,--whole-archive $(LIBDIR)/libicuuc.a $(LIBDIR)/libicudata.a -Wl,--no-whole-archive
   EXT=so
 else
   GCC=x86_64-w64-mingw32-gcc

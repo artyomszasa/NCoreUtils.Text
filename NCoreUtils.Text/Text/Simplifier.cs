@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NCoreUtils.Text.Internal;
 #if NETCOREAPP3_0 || NETCOREAPP3_1
 using System.Text;
 #endif
@@ -11,7 +12,7 @@ namespace NCoreUtils.Text
     [Obsolete("Simplifier will be removed in future versions, use StringSiplifier instead.")]
     public class Simplifier : ISimplifier
     {
-        public static ISimplifier Default { get; } = new Simplifier('-', CharacterSimplifiers.Russian, CharacterSimplifiers.Hungarian);
+        // public static ISimplifier Default { get; } = new Simplifier('-', CharacterSimplifiers.Russian, CharacterSimplifiers.Hungarian);
 
         private static IRuneSimplifier ToRuneSimplifier(ICharacterSimplifier characterSimplifier)
         {
@@ -27,13 +28,13 @@ namespace NCoreUtils.Text
 
         public char Delimiter => _simplifier.Delimiter;
 
-        public Simplifier(char delimiter, IEnumerable<ICharacterSimplifier> characterSimplifiers)
+        public Simplifier(ILibicu icu, char delimiter, IEnumerable<ICharacterSimplifier> characterSimplifiers)
         {
-            _simplifier = new StringSimplifier(delimiter, characterSimplifiers.Select(ToRuneSimplifier));
+            _simplifier = new StringSimplifier(icu, delimiter, characterSimplifiers.Select(ToRuneSimplifier));
         }
 
-        public Simplifier(char delimiter, params ICharacterSimplifier[] characterSimplifiers)
-            : this(delimiter, (IEnumerable<ICharacterSimplifier>)characterSimplifiers)
+        public Simplifier(ILibicu icu, char delimiter, params ICharacterSimplifier[] characterSimplifiers)
+            : this(icu, delimiter, (IEnumerable<ICharacterSimplifier>)characterSimplifiers)
         { }
 
         public string Simplify(string source)

@@ -1,6 +1,6 @@
 using System;
 
-namespace NCoreUtils.Text
+namespace NCoreUtils
 {
     public interface INamingConvention
     {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using NCoreUtils.Text.Internal;
 #if NETCOREAPP3_0 || NETCOREAPP3_1
 using System.Text;
@@ -18,14 +19,21 @@ namespace NCoreUtils.Text
         private static bool IsSimple(Rune rune)
             => (CharA <= rune.Value && CharZ >= rune.Value) || (Char0 <= rune.Value && Char9 >= rune.Value);
 
-        public static StringSimplifier Default { get; } = new StringSimplifier('-', RuneSimplifiers.Russian, RuneSimplifiers.German);
+        // public static StringSimplifier Default { get; } = new StringSimplifier('-', RuneSimplifiers.Russian, RuneSimplifiers.German);
+
+        private LibicuWrapper _icu;
 
         private readonly Dictionary<Rune, string> _map;
 
         public char Delimiter { get; }
 
-        public StringSimplifier(char delimiter, IEnumerable<IRuneSimplifier> runeSimplifiers)
+        public StringSimplifier(ILibicu icu, char delimiter, IEnumerable<IRuneSimplifier> runeSimplifiers)
         {
+            if (icu is null)
+            {
+                throw new ArgumentNullException(nameof(icu));
+            }
+            _icu = new LibicuWrapper(icu);
             if (runeSimplifiers is null)
             {
                 throw new System.ArgumentNullException(nameof(runeSimplifiers));
@@ -42,10 +50,11 @@ namespace NCoreUtils.Text
             Delimiter = delimiter;
         }
 
-        public StringSimplifier(char delimiter, params IRuneSimplifier[] runeSimplifiers)
-            : this(delimiter, (IEnumerable<IRuneSimplifier>)runeSimplifiers)
+        public StringSimplifier(ILibicu icu, char delimiter, params IRuneSimplifier[] runeSimplifiers)
+            : this(icu, delimiter, (IEnumerable<IRuneSimplifier>)runeSimplifiers)
         { }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool TrySimplifyRune(ref SpanBuilder builder, ref bool isDelimiter, Rune rune)
         {
             // exclude non-spacing marks!
@@ -62,7 +71,7 @@ namespace NCoreUtils.Text
                 }
                 else
                 {
-                    if (!builder.TryAppend(r)) { return false; }
+                    if (!SpanBuilderRuneExtensions.TryAppend(ref builder, r)) { return false; }
                     isDelimiter = false;
                 }
             }
@@ -84,7 +93,6 @@ namespace NCoreUtils.Text
         {
             Span<char> decomposition = stackalloc char[8];
             var isDelimiter = true;
-            var normalizer = new NativeNormalizer(NormalizationForms.FormD);
             foreach (var rune in source.EnumerateRunes())
             {
                 if (_map.TryGetValue(rune, out var replacement))
@@ -97,7 +105,7 @@ namespace NCoreUtils.Text
                 }
                 else
                 {
-                    if (normalizer.TryDecompose(rune.Value, decomposition, out var decompositionLength))
+                    if (_icu.TryDecompose(rune.Value, decomposition, out var decompositionLength))
                     {
                         ReadOnlySpan<char> decomposed = decomposition.Slice(0, decompositionLength);
                         foreach (var subrune in decomposed.EnumerateRunes())
