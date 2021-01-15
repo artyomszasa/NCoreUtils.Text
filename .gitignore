@@ -11,3 +11,6 @@ NCoreUtils*Unit/report
 
 native/obj
 native/dist
+
+NCoreUtils.Text.Libicu.Static/runtimes/linux-x64/native
+NCoreUtils.Text.Libicu.Static/runtimes/win-x64/native

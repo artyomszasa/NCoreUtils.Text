@@ -11,6 +11,15 @@ namespace NCoreUtils.Text.Internal
 {
     public class LibicuResolver
     {
+        private static int I(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+            {
+                return -1;
+            }
+            return int.Parse(input, NumberStyles.Integer, CultureInfo.InvariantCulture);
+        }
+
         private readonly object _sync = new object();
 
         private readonly Regex _icuucRegex;
@@ -29,7 +38,7 @@ namespace NCoreUtils.Text.Internal
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                _icuucRegex = new Regex("^icuuc([0-9]+).dll$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+                _icuucRegex = new Regex("^icuuc([0-9]+)?.dll$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
                 _logger.LogInformation("Initializing libicu resolver for windows [OSDescription = {0}].", RuntimeInformation.OSDescription);
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
@@ -58,6 +67,10 @@ namespace NCoreUtils.Text.Internal
                 yield return "/usr/lib";
                 yield return "/lib";
             }
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                yield return "C:\\Windows\\System32";
+            }
         }
 
         private ILibicu LoadInstance()
@@ -65,10 +78,15 @@ namespace NCoreUtils.Text.Internal
             Maybe<(IntPtr Handle, int Version)> lib = default;
             foreach (var path in GetSearchPaths())
             {
+                if (!Directory.Exists(path))
+                {
+                    _logger.LogDebug("Skipping path: {0} (no such directory).", path);
+                    continue;
+                }
                 _logger.LogDebug("Trying path: {0}.", path);
                 List<(string Path, int Version)> candidates = Directory.EnumerateFiles(path).Choose(fullPath => _icuucRegex.Match(Path.GetFileName(fullPath)) switch
                 {
-                    Match m when m.Success => (fullPath, int.Parse(m.Groups[1].Value, NumberStyles.Integer, CultureInfo.InvariantCulture)).Just(),
+                    Match m when m.Success => (fullPath, I(m.Groups[1].Value)).Just(),
                     _ => default
                 }).ToList();
                 lib = candidates.MaybePick(candidate =>

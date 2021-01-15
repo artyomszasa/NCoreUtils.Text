@@ -13,6 +13,8 @@ namespace NCoreUtils.Text.Unit
         [InlineData("valamikor [] októberben", "valamikor-oktoberben")]
         [InlineData("valamikor | októberben", "valamikor-oktoberben")]
         [InlineData("русские буквы", "russkie-bukvy")]
+        // greek tonos
+        [InlineData("építésziroda", "epitesziroda")]
         public void Default(string input, string expected)
         {
             var actual = DynamicSimplifier.Simplify(input);

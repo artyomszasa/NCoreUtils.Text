@@ -36,7 +36,7 @@ namespace NCoreUtils.Text
             _icu = new LibicuWrapper(icu);
             if (runeSimplifiers is null)
             {
-                throw new System.ArgumentNullException(nameof(runeSimplifiers));
+                throw new ArgumentNullException(nameof(runeSimplifiers));
             }
             var map = new Dictionary<Rune, string>();
             foreach (var runeSimplifier in runeSimplifiers)
@@ -95,6 +95,10 @@ namespace NCoreUtils.Text
             var isDelimiter = true;
             foreach (var rune in source.EnumerateRunes())
             {
+                if (Rune.GetUnicodeCategory(rune) == UnicodeCategory.NonSpacingMark)
+                {
+                    continue;
+                }
                 if (_map.TryGetValue(rune, out var replacement))
                 {
                     foreach (var ch in replacement)

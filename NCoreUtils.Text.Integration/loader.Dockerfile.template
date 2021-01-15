@@ -1,0 +1,14 @@
+FROM %TAG_SDK% AS build-env
+WORKDIR /app
+COPY ./NCoreUtils.Text.Abstractions ./NCoreUtils.Text.Abstractions/
+COPY ./NCoreUtils.Text ./NCoreUtils.Text/
+COPY ./NCoreUtils.Text.Libicu.Loader ./NCoreUtils.Text.Libicu.Loader/
+COPY ./NCoreUtils.Text.Integration.Check ./NCoreUtils.Text.Integration.Check/
+RUN dotnet publish ./NCoreUtils.Text.Integration.Check/NCoreUtils.Text.Integration.Check.csproj -r %RID% -c Release -o /app/out
+
+FROM %TAG_RUNTIME%
+WORKDIR /app
+%RUN%
+ENV DOTNET_ENVIRONMENT=Production
+COPY --from=build-env /app/out ./
+ENTRYPOINT ["./NCoreUtils.Text.Integration.Check"]

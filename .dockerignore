@@ -1,0 +1,13 @@
+.vscode
+.vs
+.ionide
+
+coverage.opencover.xml
+
+NCoreUtils*/bin
+NCoreUtils*/obj
+
+NCoreUtils*Unit
+
+native/obj
+native/dist
