@@ -11,13 +11,13 @@ namespace NCoreUtils.Text.Internal
 {
     public class LibicuResolver
     {
-        private static int I(string input)
+        private static decimal D(string input)
         {
             if (string.IsNullOrEmpty(input))
             {
                 return -1;
             }
-            return int.Parse(input, NumberStyles.Integer, CultureInfo.InvariantCulture);
+            return decimal.Parse(input, NumberStyles.Float, CultureInfo.InvariantCulture);
         }
 
         private readonly object _sync = new object();
@@ -33,17 +33,17 @@ namespace NCoreUtils.Text.Internal
             _logger = logger;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
             {
-                _icuucRegex = new Regex("^libicuuc.so.([0-9]+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+                _icuucRegex = new Regex("^libicuuc.so.([0-9.]+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
                 _logger.LogInformation("Initializing libicu resolver for linux [OSDescription = {0}].", RuntimeInformation.OSDescription);
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                _icuucRegex = new Regex("^icuuc([0-9]+)?.dll$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+                _icuucRegex = new Regex("^icuuc([0-9.]+)?.dll$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
                 _logger.LogInformation("Initializing libicu resolver for windows [OSDescription = {0}].", RuntimeInformation.OSDescription);
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                _icuucRegex = new Regex("^libicuuc.dylib.([0-9]+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+                _icuucRegex = new Regex("^libicuuc.([0-9.]+).dylib$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
                 _logger.LogInformation("Initializing libicu resolver for osx [OSDescription = {0}].", RuntimeInformation.OSDescription);
             }
             else
@@ -75,7 +75,7 @@ namespace NCoreUtils.Text.Internal
 
         private ILibicu LoadInstance()
         {
-            Maybe<(IntPtr Handle, int Version)> lib = default;
+            Maybe<(IntPtr Handle, decimal Version)> lib = default;
             foreach (var path in GetSearchPaths())
             {
                 if (!Directory.Exists(path))
@@ -84,9 +84,9 @@ namespace NCoreUtils.Text.Internal
                     continue;
                 }
                 _logger.LogDebug("Trying path: {0}.", path);
-                List<(string Path, int Version)> candidates = Directory.EnumerateFiles(path).Choose(fullPath => _icuucRegex.Match(Path.GetFileName(fullPath)) switch
+                List<(string Path, decimal Version)> candidates = Directory.EnumerateFiles(path).Choose(fullPath => _icuucRegex.Match(Path.GetFileName(fullPath)) switch
                 {
-                    Match m when m.Success => (fullPath, I(m.Groups[1].Value)).Just(),
+                    Match m when m.Success => (fullPath, D(m.Groups[1].Value)).Just(),
                     _ => default
                 }).ToList();
                 lib = candidates.MaybePick(candidate =>
@@ -131,11 +131,11 @@ namespace NCoreUtils.Text.Internal
                 getDecomposition
             );
 
-            static IntPtr GetFunctionPtr(IntPtr libHandle, string name, int version)
+            static IntPtr GetFunctionPtr(IntPtr libHandle, string name, decimal version)
             {
                 if (!NativeLibrary.TryGetExport(libHandle, name, out var pFun))
                 {
-                    if (!NativeLibrary.TryGetExport(libHandle, $"{name}_{version}", out pFun))
+                    if (!NativeLibrary.TryGetExport(libHandle, $"{name}_{(int)version}", out pFun))
                     {
                         throw new InvalidOperationException($"Failed to get {name} from libicu.");
                     }
