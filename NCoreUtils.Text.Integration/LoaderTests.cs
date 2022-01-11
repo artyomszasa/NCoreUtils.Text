@@ -10,16 +10,16 @@ namespace NCoreUtils.Text.Integration
 {
     public class LoaderTests
     {
-        private static readonly UTF8Encoding _utf8 = new UTF8Encoding(false);
+        private static readonly UTF8Encoding _utf8 = new(false);
 
-        private string GetDockerfileTemplate()
+        private static string GetDockerfileTemplate()
         {
             using var stream = typeof(LoaderTests).Assembly.GetManifestResourceStream(typeof(LoaderTests).Namespace + ".loader.Dockerfile.template");
             using var reader = new StreamReader(stream!, _utf8, false, 8192, true);
             return reader.ReadToEnd();
         }
 
-        private void Build(string targetName, string dockerfile, string wd)
+        private static void Build(string targetName, string dockerfile, string wd)
         {
             var process = new Process();
             var startInfo = new ProcessStartInfo
@@ -37,7 +37,7 @@ namespace NCoreUtils.Text.Integration
             }
         }
 
-        private void RmImage(string targetName)
+        private static void RmImage(string targetName)
         {
             var process = new Process();
             var startInfo = new ProcessStartInfo
@@ -55,7 +55,7 @@ namespace NCoreUtils.Text.Integration
             }
         }
 
-        private string RunImage(string targetName)
+        private static string RunImage(string targetName)
         {
             using var output = new StringWriter();
             using var error = new StringWriter();
@@ -109,8 +109,11 @@ namespace NCoreUtils.Text.Integration
             return output.ToString();
         }
 
+        /*
         [InlineData("mcr.microsoft.com/dotnet/core/sdk:3.1.301-buster", "mcr.microsoft.com/dotnet/core/runtime-deps:3.1.5-buster-slim", "linux-x64", "")]
         [InlineData("mcr.microsoft.com/dotnet/core/sdk:3.1.301-alpine3.12", "mcr.microsoft.com/dotnet/core/runtime-deps:3.1.5-alpine3.12", "alpine-x64", "RUN apk update && apk add --no-cache icu-libs")]
+        */
+        [InlineData("mcr.microsoft.com/dotnet/sdk:6.0.100-bullseye-slim", "mcr.microsoft.com/dotnet/runtime-deps:6.0.0-bullseye-slim", "linux-x64", "")]
         [Theory]
         public void RunInDocker(string tagSdk, string tagRuntime, string rid, string run)
         {
@@ -151,7 +154,7 @@ namespace NCoreUtils.Text.Integration
                 }
                 finally
                 {
-                    // RmImage(imageName);
+                    RmImage(imageName);
                 }
             }
             finally

@@ -1,5 +1,5 @@
 using System;
-#if NETCOREAPP3_0 || NETCOREAPP3_1
+#if !NETSTANDARD2_1
 using System.Text;
 #endif
 

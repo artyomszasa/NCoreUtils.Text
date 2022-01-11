@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using NCoreUtils.Text.Internal;
-#if NETCOREAPP3_0 || NETCOREAPP3_1
+#if !NETSTANDARD2_1
 using System.Text;
 #endif
 
@@ -105,7 +105,7 @@ namespace NCoreUtils.Text
                 {
                     if (Decomposer.TryDecompose(rune.Value, decomposition, out var decompositionLength))
                     {
-                        ReadOnlySpan<char> decomposed = decomposition.Slice(0, decompositionLength);
+                        ReadOnlySpan<char> decomposed = decomposition[..decompositionLength];
                         foreach (var subrune in decomposed.EnumerateRunes())
                         {
                             if (!TrySimplifyRune(ref builder, ref isDelimiter, subrune)) { return false; }

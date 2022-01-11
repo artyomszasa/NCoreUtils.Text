@@ -9,6 +9,7 @@ namespace NCoreUtils
             => services
                 .AddSingleton<LibicuResolver>()
                 .AddSingleton(serviceProvider => serviceProvider.GetRequiredService<LibicuResolver>().GetInstance())
-                .AddSingleton<LibicuDecomposer>();
+                .AddSingleton<LibicuDecomposer>()
+                .AddSingleton<IDecomposer>(serviceProvider => serviceProvider.GetRequiredService<LibicuDecomposer>());
     }
 }

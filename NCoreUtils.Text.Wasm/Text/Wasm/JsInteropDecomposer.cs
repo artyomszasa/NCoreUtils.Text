@@ -31,7 +31,7 @@ namespace NCoreUtils.Text.Wasm
                 IsInitialized = true;
             }
             var data = Runtime.Invoke<int[]>("jsNCoreUtilsTextDecompose", unicodeScalar);
-            if (!(data is null) && data.Length > 1 && data.Length <= decomposition.Length)
+            if (data is not null && data.Length > 1 && data.Length <= decomposition.Length)
             {
                 var buffer = ArrayPool<char>.Shared.Rent(data.Length);
                 try
@@ -40,7 +40,7 @@ namespace NCoreUtils.Text.Wasm
                     {
                         buffer[i] = (char)data[i];
                     }
-                    buffer.AsSpan().Slice(0, data.Length).CopyTo(decomposition);
+                    buffer.AsSpan()[..data.Length].CopyTo(decomposition);
                     written = data.Length;
                     return true;
                 }

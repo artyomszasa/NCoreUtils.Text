@@ -3,7 +3,7 @@ using Xunit;
 
 namespace NCoreUtils.Text.Unit
 {
-    [Obsolete]
+    [Obsolete("Backward compatibility test")]
     public class SimplifierTests : TestBase
     {
         [Theory]
@@ -18,8 +18,6 @@ namespace NCoreUtils.Text.Unit
         public void Default(string input, string expected)
         {
             var actual = DynamicSimplifier.Simplify(input);
-            Assert.Equal(expected, actual);
-            actual = StaticSimplifier.Simplify(input);
             Assert.Equal(expected, actual);
         }
     }

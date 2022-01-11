@@ -20,7 +20,7 @@ namespace NCoreUtils.Text.Internal
             return decimal.Parse(input, NumberStyles.Float, CultureInfo.InvariantCulture);
         }
 
-        private readonly object _sync = new object();
+        private readonly object _sync = new();
 
         private readonly Regex _icuucRegex;
 
@@ -34,17 +34,17 @@ namespace NCoreUtils.Text.Internal
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
             {
                 _icuucRegex = new Regex("^libicuuc.so.([0-9.]+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
-                _logger.LogInformation("Initializing libicu resolver for linux [OSDescription = {0}].", RuntimeInformation.OSDescription);
+                _logger.LogInformation("Initializing libicu resolver for linux [OSDescription = {Os}].", RuntimeInformation.OSDescription);
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 _icuucRegex = new Regex("^icuuc([0-9.]+)?.dll$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
-                _logger.LogInformation("Initializing libicu resolver for windows [OSDescription = {0}].", RuntimeInformation.OSDescription);
+                _logger.LogInformation("Initializing libicu resolver for windows [OSDescription = {Os}].", RuntimeInformation.OSDescription);
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 _icuucRegex = new Regex("^libicuuc.([0-9.]+).dylib$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
-                _logger.LogInformation("Initializing libicu resolver for osx [OSDescription = {0}].", RuntimeInformation.OSDescription);
+                _logger.LogInformation("Initializing libicu resolver for osx [OSDescription = {Os}].", RuntimeInformation.OSDescription);
             }
             else
             {
@@ -52,7 +52,7 @@ namespace NCoreUtils.Text.Internal
             }
         }
 
-        private IEnumerable<string> GetSearchPaths()
+        private static IEnumerable<string> GetSearchPaths()
         {
             var env = Environment.GetEnvironmentVariable("LIBICU_PATH");
             if (!string.IsNullOrEmpty(env))
@@ -80,26 +80,26 @@ namespace NCoreUtils.Text.Internal
             {
                 if (!Directory.Exists(path))
                 {
-                    _logger.LogDebug("Skipping path: {0} (no such directory).", path);
+                    _logger.LogDebug("Skipping path: {Path} (no such directory).", path);
                     continue;
                 }
-                _logger.LogDebug("Trying path: {0}.", path);
-                List<(string Path, decimal Version)> candidates = Directory.EnumerateFiles(path).Choose(fullPath => _icuucRegex.Match(Path.GetFileName(fullPath)) switch
+                _logger.LogDebug("Trying path: {Path}.", path);
+                List<(string Path, decimal Version)> candidates = Directory.EnumerateFiles(path).Choose(fullPath => _icuucRegex.Match(Path.GetFileName(fullPath!)) switch
                 {
                     Match m when m.Success => (fullPath, D(m.Groups[1].Value)).Just(),
                     _ => default
-                }).ToList();
+                }).ToList()!;
                 lib = candidates.MaybePick(candidate =>
                 {
                     try
                     {
                         var handle = NativeLibrary.Load(candidate.Path);
-                        _logger.LogDebug("Successfully loaded {0}.", candidate.Path);
+                        _logger.LogDebug("Successfully loaded {Path}.", candidate.Path);
                         return (handle, candidate.Version).Just();
                     }
                     catch (Exception exn)
                     {
-                        _logger.LogDebug(exn, "Failed to load {0}.", candidate.Path);
+                        _logger.LogDebug(exn, "Failed to load {Path}.", candidate.Path);
                         return default;
                     }
                 });

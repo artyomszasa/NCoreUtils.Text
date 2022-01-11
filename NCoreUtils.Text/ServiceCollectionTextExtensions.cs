@@ -44,7 +44,7 @@ namespace NCoreUtils
                 var icu = serviceProvider.GetService<ILibicu>();
                 if (icu is null)
                 {
-                    throw new InvalidOperationException($"Libicu provider has not been registered, use either NCoreUtils.Text.Libicu.Loader or NCoreUtils.Text.Libicu.Static packages to add libicu provider.");
+                    throw new InvalidOperationException($"Libicu provider has not been registered, use NCoreUtils.Text.Libicu.Loader package to add libicu provider.");
                 }
                 return new Simplifier(icu, delimiter, characterSimplifiers);
             });

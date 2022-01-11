@@ -20,14 +20,12 @@ namespace NCoreUtils.Text.Unit
         {
             var actual = DynamicStringSimplifier.Simplify(input);
             Assert.Equal(expected, actual);
-            actual = StaticStringSimplifier.Simplify(input);
-            Assert.Equal(expected, actual);
         }
 
         [Fact]
         public void ExceptionCases()
         {
-            Assert.Throws<ArgumentNullException>(() => StaticStringSimplifier.Simplify(null!));
+            Assert.Throws<ArgumentNullException>(() => DynamicStringSimplifier.Simplify(null!));
             Assert.Throws<ArgumentException>(() =>
             {
                 Span<char> input = stackalloc char[20];
@@ -36,21 +34,21 @@ namespace NCoreUtils.Text.Unit
                     input[i] = 'a';
                 }
                 Span<char> buffer = stackalloc char[10];
-                StaticStringSimplifier.Simplify(input, buffer);
+                DynamicStringSimplifier.Simplify(input, buffer);
             });
         }
 
         [Fact]
         public void InvalidCases()
         {
-            Assert.Equal(string.Empty, StaticStringSimplifier.Simplify(string.Empty));
+            Assert.Equal(string.Empty, DynamicStringSimplifier.Simplify(string.Empty));
         }
 
         [Fact]
         public void LargeString()
         {
             var source = new string('a', 200000);
-            Assert.Equal(source, StaticStringSimplifier.Simplify(source));
+            Assert.Equal(source, DynamicStringSimplifier.Simplify(source));
         }
     }
 }

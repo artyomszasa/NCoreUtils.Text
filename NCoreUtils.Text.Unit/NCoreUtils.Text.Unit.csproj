@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
@@ -19,7 +19,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NCoreUtils.Text\NCoreUtils.Text.csproj" />
-    <ProjectReference Include="..\NCoreUtils.Text.Libicu.Static\NCoreUtils.Text.Libicu.Static.csproj" />
     <ProjectReference Include="..\NCoreUtils.Text.Libicu.Loader\NCoreUtils.Text.Libicu.Loader.csproj" />
   </ItemGroup>
   <Target Name="BeforeRunCoverageTests">

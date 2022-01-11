@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;netstandard2.0;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net6.0;netstandard2.1;netcoreapp3.1</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RootNamespace>NCoreUtils</RootNamespace>
   </PropertyGroup>
-  <ItemGroup Condition="$(TargetFramework.StartsWith('netcoreapp'))">
+  <ItemGroup Condition=" '$(TargetFramework)' != 'netstandard2.1' ">
     <Compile Remove="Text\Rune.cs" />
     <Compile Remove="Text\UnicodeUtility.cs" />
     <Compile Remove="Text\Utf16Utility.cs" />
@@ -15,7 +15,7 @@
     <ProjectReference Include="..\NCoreUtils.Text.Abstractions\NCoreUtils.Text.Abstractions.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.3" />
-    <PackageReference Include="NCoreUtils.Extensions.Memory" Version="1.0.7" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(FxNugetVersion)" />
+    <PackageReference Include="NCoreUtils.Extensions.Memory" Version="3.0.0.2" />
   </ItemGroup>
 </Project>
