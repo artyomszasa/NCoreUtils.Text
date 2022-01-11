@@ -19,21 +19,15 @@ namespace NCoreUtils.Text
         private static bool IsSimple(Rune rune)
             => (CharA <= rune.Value && CharZ >= rune.Value) || (Char0 <= rune.Value && Char9 >= rune.Value);
 
-        // public static StringSimplifier Default { get; } = new StringSimplifier('-', RuneSimplifiers.Russian, RuneSimplifiers.German);
+        private IDecomposer Decomposer { get; }
 
-        private LibicuWrapper _icu;
-
-        private readonly Dictionary<Rune, string> _map;
+        private Dictionary<Rune, string> RuneMap { get; }
 
         public char Delimiter { get; }
 
-        public StringSimplifier(ILibicu icu, char delimiter, IEnumerable<IRuneSimplifier> runeSimplifiers)
+        public StringSimplifier(IDecomposer decomposer, char delimiter, IEnumerable<IRuneSimplifier> runeSimplifiers)
         {
-            if (icu is null)
-            {
-                throw new ArgumentNullException(nameof(icu));
-            }
-            _icu = new LibicuWrapper(icu);
+            Decomposer = decomposer ?? throw new ArgumentNullException(nameof(decomposer));
             if (runeSimplifiers is null)
             {
                 throw new ArgumentNullException(nameof(runeSimplifiers));
@@ -46,12 +40,12 @@ namespace NCoreUtils.Text
                     map[key] = runeSimplifier[key];
                 }
             }
-            _map = map;
+            RuneMap = map;
             Delimiter = delimiter;
         }
 
-        public StringSimplifier(ILibicu icu, char delimiter, params IRuneSimplifier[] runeSimplifiers)
-            : this(icu, delimiter, (IEnumerable<IRuneSimplifier>)runeSimplifiers)
+        public StringSimplifier(IDecomposer decomposer, char delimiter, params IRuneSimplifier[] runeSimplifiers)
+            : this(decomposer, delimiter, (IEnumerable<IRuneSimplifier>)runeSimplifiers)
         { }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -99,7 +93,7 @@ namespace NCoreUtils.Text
                 {
                     continue;
                 }
-                if (_map.TryGetValue(rune, out var replacement))
+                if (RuneMap.TryGetValue(rune, out var replacement))
                 {
                     foreach (var ch in replacement)
                     {
@@ -109,7 +103,7 @@ namespace NCoreUtils.Text
                 }
                 else
                 {
-                    if (_icu.TryDecompose(rune.Value, decomposition, out var decompositionLength))
+                    if (Decomposer.TryDecompose(rune.Value, decomposition, out var decompositionLength))
                     {
                         ReadOnlySpan<char> decomposed = decomposition.Slice(0, decompositionLength);
                         foreach (var subrune in decomposed.EnumerateRunes())

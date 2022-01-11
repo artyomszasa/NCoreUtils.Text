@@ -30,7 +30,7 @@ namespace NCoreUtils.Text
 
         public Simplifier(ILibicu icu, char delimiter, IEnumerable<ICharacterSimplifier> characterSimplifiers)
         {
-            _simplifier = new StringSimplifier(icu, delimiter, characterSimplifiers.Select(ToRuneSimplifier));
+            _simplifier = new StringSimplifier(new LibicuDecomposer(icu), delimiter, characterSimplifiers.Select(ToRuneSimplifier));
         }
 
         public Simplifier(ILibicu icu, char delimiter, params ICharacterSimplifier[] characterSimplifiers)

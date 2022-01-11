@@ -75,7 +75,7 @@ namespace NCoreUtils.Text.Unit
         {
             get
             {
-                return new StringSimplifier(_dynIcu, '-', RuneSimplifiers.German, RuneSimplifiers.Russian);
+                return new StringSimplifier(new LibicuDecomposer(_dynIcu), '-', RuneSimplifiers.German, RuneSimplifiers.Russian);
             }
         }
 
@@ -83,7 +83,7 @@ namespace NCoreUtils.Text.Unit
         {
             get
             {
-                return new StringSimplifier(_staticIcu, '-', RuneSimplifiers.German, RuneSimplifiers.Russian);
+                return new StringSimplifier(new LibicuDecomposer(_staticIcu), '-', RuneSimplifiers.German, RuneSimplifiers.Russian);
             }
         }
 

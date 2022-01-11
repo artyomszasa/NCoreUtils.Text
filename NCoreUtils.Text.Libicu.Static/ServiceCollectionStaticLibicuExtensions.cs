@@ -6,6 +6,8 @@ namespace NCoreUtils
     public static class ServiceCollectionStaticLibicuExtensions
     {
         public static IServiceCollection AddLibicu(this IServiceCollection services)
-            => services.AddSingleton<ILibicu>(new StaticLibicu());
+            => services
+                .AddSingleton<ILibicu>(new StaticLibicu())
+                .AddSingleton<LibicuDecomposer>();
     }
 }

@@ -15,12 +15,12 @@ namespace NCoreUtils
         {
             return services.AddSingleton<IStringSimplifier>(serviceProvider =>
             {
-                var icu = serviceProvider.GetService<ILibicu>();
-                if (icu is null)
+                var decomposer = serviceProvider.GetService<IDecomposer>();
+                if (decomposer is null)
                 {
-                    throw new InvalidOperationException($"Libicu provider has not been registered, use either NCoreUtils.Text.Libicu.Loader or NCoreUtils.Text.Libicu.Static package to add libicu provider.");
+                    throw new InvalidOperationException($"Decomposer has not been registered, use one of NCoreUtils.Text.Libicu.Loader, NCoreUtils.Text.Libicu.Static or NCoreUtils.Text.Wasm package to add decomposition provider.");
                 }
-                return new StringSimplifier(icu, delimiter, runeSimplifiers);
+                return new StringSimplifier(decomposer, delimiter, runeSimplifiers);
             });
         }
 
