@@ -15,7 +15,9 @@ namespace NCoreUtils.Text.Unit
         [InlineData("levée en masse", "levee-en-masse")]
         [InlineData("lev\u0065\u0301e en masse", "levee-en-masse")]
         [InlineData("русские буквы", "russkie-bukvy")]
+        [InlineData("Главная", "glavnaja")]
         [InlineData("welcome\uD83D\uDE00here", "welcome-here")]
+        [InlineData("groß", "gross")]
         public void Default(string input, string expected)
         {
             var actual = DynamicStringSimplifier.Simplify(input);

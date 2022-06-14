@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.JSInterop;
 using NCoreUtils.Text.Internal;
 
@@ -23,6 +24,10 @@ namespace NCoreUtils.Text.Wasm
             }
         }
 
+#if NET6_0_OR_GREATER
+        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Only System.Int32 and System.Int32[] are used.")]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(int[]))]
+#endif
         public bool TryDecompose(int unicodeScalar, Span<char> decomposition, out int written)
         {
             if (!IsInitialized)
