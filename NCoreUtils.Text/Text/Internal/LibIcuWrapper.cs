@@ -1,27 +1,35 @@
 using System;
+using System.Runtime.InteropServices;
 
-namespace NCoreUtils.Text.Internal
+namespace NCoreUtils.Text.Internal;
+
+public readonly struct LibicuWrapper
 {
-    public struct LibicuWrapper
+    private static IntPtr GetNormalizer(ILibicu icu)
     {
-        internal readonly ILibicu _instance;
-
-        internal IntPtr _pNormalizer;
-
-        public LibicuWrapper(ILibicu instance)
+        var ptr = icu.UnmanagedGetFormDNormalizer(out var err);
+        if (err.IsSuccess())
         {
-            _instance = instance;
-            _pNormalizer = default;
+            return ptr;
         }
+        throw new LibicuException(err);
+    }
 
-        public IntPtr GetNormalizer(int normalizationForm)
+    internal readonly ILibicu _instance;
+
+    internal readonly IntPtr _pNormalizer;
+
+    public LibicuWrapper(ILibicu instance)
+    {
+        _instance = instance;
+        _pNormalizer = GetNormalizer(instance);
+    }
+
+    internal unsafe int Decompose(int value, Span<char> decomposition, out UErrorCode err)
+    {
+        fixed (char* pDecomposition = &MemoryMarshal.GetReference(decomposition))
         {
-            var ptr = _instance.UnmanagedGetNormalizer(normalizationForm , out var err);
-            if (err.IsSuccess())
-            {
-                return ptr;
-            }
-            throw new LibicuException(err);
+            return _instance.UnmanagedDecompose(_pNormalizer, value, (IntPtr)pDecomposition, decomposition.Length, out err);
         }
     }
 }

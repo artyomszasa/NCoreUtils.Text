@@ -16,7 +16,11 @@ namespace NCoreUtils.Text.Unit
                 public void Dispose() { }
             }
 
-            public IDisposable BeginScope<TState>(TState state) => new DummyDisposable();
+            public IDisposable BeginScope<TState>(TState state)
+#if NET7_0_OR_GREATER
+                where TState : notnull
+#endif
+                => new DummyDisposable();
 
             public bool IsEnabled(LogLevel logLevel) => true;
 
@@ -26,20 +30,11 @@ namespace NCoreUtils.Text.Unit
 
         private readonly ILibicu _dynIcu;
 
-        [Obsolete("Backward compatibility test")]
-        protected ISimplifier DynamicSimplifier
-        {
-            get
-            {
-                return new Simplifier(_dynIcu, '-', CharacterSimplifiers.Russian, CharacterSimplifiers.Hungarian);
-            }
-        }
-
         protected IStringSimplifier DynamicStringSimplifier
         {
             get
             {
-                return new StringSimplifier(new LibicuDecomposer(_dynIcu), '-', RuneSimplifiers.German, RuneSimplifiers.Russian);
+                return new StringSimplifier(new LibicuDecomposer(_dynIcu), '-', RuneSimplifiers.German, RuneSimplifiers.Cyrillic);
             }
         }
 

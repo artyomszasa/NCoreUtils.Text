@@ -1,10 +1,9 @@
 using System;
 
-namespace NCoreUtils.Text
+namespace NCoreUtils.Text;
+
+internal static class RuneEnumerationExtensions
 {
-    internal static class RuneEnumerationExtensions
-    {
-        public static SpanRuneEnumerator EnumerateRunes(this ReadOnlySpan<char> source)
-            => new SpanRuneEnumerator(source);
-    }
+    public static SpanRuneEnumerator EnumerateRunes(this ReadOnlySpan<char> source)
+        => new SpanRuneEnumerator(source);
 }

@@ -3,16 +3,14 @@ using System;
 using System.Text;
 #endif
 
-namespace NCoreUtils.Text
+namespace NCoreUtils.Text;
+
+public static class SpanBuilderRuneExtensions
 {
-    internal static class SpanBuilderRuneExtensions
+    public static bool TryAppend(this ref SpanBuilder builder, Rune rune)
     {
-        public static bool TryAppend(this ref SpanBuilder builder, Rune rune)
-        {
-            Span<char> buffer = stackalloc char[4];
-            var size = rune.EncodeToUtf16(buffer);
-            ReadOnlySpan<char> slice = buffer.Slice(0, size);
-            return builder.TryAppend(slice);
-        }
+        Span<char> buffer = stackalloc char[4];
+        var size = rune.EncodeToUtf16(buffer);
+        return builder.TryAppend(buffer[..size]);
     }
 }

@@ -1,11 +1,12 @@
 FROM %TAG_SDK% AS build-env
 WORKDIR /app
+COPY ./NuGet.Config ./
 COPY ./Directory.Build.props ./
 COPY ./NCoreUtils.Text.Abstractions ./NCoreUtils.Text.Abstractions/
 COPY ./NCoreUtils.Text ./NCoreUtils.Text/
 COPY ./NCoreUtils.Text.Libicu.Loader ./NCoreUtils.Text.Libicu.Loader/
 COPY ./NCoreUtils.Text.Integration.Check ./NCoreUtils.Text.Integration.Check/
-RUN dotnet publish ./NCoreUtils.Text.Integration.Check/NCoreUtils.Text.Integration.Check.csproj -r %RID% --self-contained -c Release -o /app/out
+RUN dotnet publish ./NCoreUtils.Text.Integration.Check/NCoreUtils.Text.Integration.Check.csproj -f %FW% -r %RID% --self-contained -c Release -o /app/out
 
 FROM %TAG_RUNTIME%
 WORKDIR /app

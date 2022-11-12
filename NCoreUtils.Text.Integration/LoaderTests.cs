@@ -109,13 +109,10 @@ namespace NCoreUtils.Text.Integration
             return output.ToString();
         }
 
-        /*
-        [InlineData("mcr.microsoft.com/dotnet/core/sdk:3.1.301-buster", "mcr.microsoft.com/dotnet/core/runtime-deps:3.1.5-buster-slim", "linux-x64", "")]
-        [InlineData("mcr.microsoft.com/dotnet/core/sdk:3.1.301-alpine3.12", "mcr.microsoft.com/dotnet/core/runtime-deps:3.1.5-alpine3.12", "alpine-x64", "RUN apk update && apk add --no-cache icu-libs")]
-        */
-        [InlineData("mcr.microsoft.com/dotnet/sdk:6.0.100-bullseye-slim", "mcr.microsoft.com/dotnet/runtime-deps:6.0.0-bullseye-slim", "linux-x64", "")]
+        // [InlineData("net6.0", "mcr.microsoft.com/dotnet/sdk:6.0.403-bullseye-slim-amd64", "mcr.microsoft.com/dotnet/6.0.11-bullseye-slim-amd64", "linux-x64", "")]
+        [InlineData("net7.0", "mcr.microsoft.com/dotnet/sdk:7.0.100-bullseye-slim-amd64", "mcr.microsoft.com/dotnet/runtime-deps:7.0.0-bullseye-slim-amd64", "linux-x64", "")]
         [Theory]
-        public void RunInDocker(string tagSdk, string tagRuntime, string rid, string run)
+        public void RunInDocker(string framework, string tagSdk, string tagRuntime, string rid, string run)
         {
             var dockerfile = Path.ChangeExtension(Path.GetTempFileName(), "Dockerfile");
             try
@@ -124,22 +121,9 @@ namespace NCoreUtils.Text.Integration
                     .Replace("%TAG_SDK%", tagSdk)
                     .Replace("%TAG_RUNTIME%", tagRuntime)
                     .Replace("%RID%", rid)
-                    .Replace("%RUN%", run);
+                    .Replace("%RUN%", run)
+                    .Replace("%FW%", framework);
                 File.WriteAllText(dockerfile, dockerfileTemplate, _utf8);
-                // using var dockerfile = new MemoryStream();
-                // {
-                //     using var writer = new StreamWriter(dockerfile, _utf8, 8192, true);
-                //     writer.Write(dockerfileTemplate);
-                //     writer.Flush();
-                // }
-                // dockerfile.Seek(0, SeekOrigin.Begin);
-                // using var image = new MemoryStream();
-                // using var client = new DockerClientConfiguration(new Uri("unix:///var/run/docker.sock")).CreateClient();
-                // client.Images.BuildImageFromDockerfileAsync(image, new Docker.DotNet.Models.ImageBuildParameters
-                // {
-                //     Dockerfile = dockerfile,
-                //     Target =
-                // })
                 var imageName = $"ncoreutils-text-integration-check-{rid}:0.0.0";
                 var path = Environment.CurrentDirectory;
                 while (path!.Length > 5 && Path.GetFileName(path) != "NCoreUtils.Text")

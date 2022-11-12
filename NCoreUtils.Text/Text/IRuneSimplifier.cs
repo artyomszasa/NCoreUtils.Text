@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 #endif
 
-namespace NCoreUtils.Text
-{
-    public interface IRuneSimplifier
-    {
-        IReadOnlyCollection<Rune> Keys { get; }
+namespace NCoreUtils.Text;
 
-        string this[Rune key] { get; }
-    }
+public interface IRuneSimplifier
+{
+    IReadOnlyCollection<Rune> Keys { get; }
+
+    string this[Rune key] { get; }
 }

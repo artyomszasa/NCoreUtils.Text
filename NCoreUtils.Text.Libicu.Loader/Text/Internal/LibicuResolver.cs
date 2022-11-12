@@ -1,28 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 
 namespace NCoreUtils.Text.Internal
 {
     public class LibicuResolver
     {
-        private static decimal D(string input)
-        {
-            if (string.IsNullOrEmpty(input))
-            {
-                return -1;
-            }
-            return decimal.Parse(input, NumberStyles.Float, CultureInfo.InvariantCulture);
-        }
-
         private readonly object _sync = new();
 
-        private readonly Regex _icuucRegex;
+        private readonly Pattern _icuucPattern;
 
         private readonly ILogger _logger;
 
@@ -33,17 +21,17 @@ namespace NCoreUtils.Text.Internal
             _logger = logger;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
             {
-                _icuucRegex = new Regex("^libicuuc.so.([0-9.]+)$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+                _icuucPattern = new("libicuuc.so.", string.Empty);
                 _logger.LogInformation("Initializing libicu resolver for linux [OSDescription = {Os}].", RuntimeInformation.OSDescription);
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                _icuucRegex = new Regex("^icuuc([0-9.]+)?.dll$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+                _icuucPattern = new("icuuc", ".dll");
                 _logger.LogInformation("Initializing libicu resolver for windows [OSDescription = {Os}].", RuntimeInformation.OSDescription);
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                _icuucRegex = new Regex("^libicuuc.([0-9.]+).dylib$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+                _icuucPattern = new("libicuuc.", ".dylib");
                 _logger.LogInformation("Initializing libicu resolver for osx [OSDescription = {Os}].", RuntimeInformation.OSDescription);
             }
             else
@@ -75,7 +63,6 @@ namespace NCoreUtils.Text.Internal
 
         private ILibicu LoadInstance()
         {
-            Maybe<(IntPtr Handle, decimal Version)> lib = default;
             foreach (var path in GetSearchPaths())
             {
                 if (!Directory.Exists(path))
@@ -84,58 +71,40 @@ namespace NCoreUtils.Text.Internal
                     continue;
                 }
                 _logger.LogDebug("Trying path: {Path}.", path);
-                List<(string Path, decimal Version)> candidates = Directory.EnumerateFiles(path).Choose(fullPath => _icuucRegex.Match(Path.GetFileName(fullPath!)) switch
+                foreach (var fullPath in Directory.EnumerateFiles(path))
                 {
-                    Match m when m.Success => (fullPath, D(m.Groups[1].Value)).Just(),
-                    _ => default
-                }).ToList()!;
-                lib = candidates.MaybePick(candidate =>
-                {
-                    try
+                    if (_icuucPattern.Match(Path.GetFileName(fullPath), out var version))
                     {
-                        var handle = NativeLibrary.Load(candidate.Path);
-                        _logger.LogDebug("Successfully loaded {Path}.", candidate.Path);
-                        return (handle, candidate.Version).Just();
+                        try
+                        {
+                            if (NativeLibrary.TryLoad(fullPath, out var handle))
+                            {
+                                _logger.LogDebug("Successfully loaded {Path} [Version = {Version}].", fullPath, version);
+                                var pGetNFDInstance = GetFunctionPtr(handle, "unorm2_getNFDInstance", version);
+                                var pGetDecomposition = GetFunctionPtr(handle, "unorm2_getDecomposition", version);
+                                var getNFDinstance = Marshal.GetDelegateForFunctionPointer<GetNormalizerInstanceDelegate>(pGetNFDInstance);
+                                var getDecomposition = Marshal.GetDelegateForFunctionPointer<GetCompositionDelegate>(pGetDecomposition);
+                                return new DynamicLibicu(getNFDinstance, getDecomposition);
+                            }
+                            else
+                            {
+                                _logger.LogWarning("Failed to load {Path}.", fullPath);
+                            }
+                        }
+                        catch (Exception exn)
+                        {
+                            _logger.LogWarning(exn, "Failed to load {Path}.", fullPath);
+                        }
                     }
-                    catch (Exception exn)
-                    {
-                        _logger.LogDebug(exn, "Failed to load {Path}.", candidate.Path);
-                        return default;
-                    }
-                });
-                if (lib.HasValue)
-                {
-                    break;
                 }
             }
-            if (!lib.HasValue)
-            {
-                throw new InvalidOperationException($"Failed to load libicu from all sources Consider providing search path through LIBICU_PATH environment variable.");
-            }
-            var (libHandle, version) = lib.Value;
-            var pGetNFCInstance = GetFunctionPtr(libHandle, "unorm2_getNFCInstance", version);
-            var pGetNFDInstance = GetFunctionPtr(libHandle, "unorm2_getNFDInstance", version);
-            var pGetNFKCInstance = GetFunctionPtr(libHandle, "unorm2_getNFKCInstance", version);
-            var pGetNFKDInstance = GetFunctionPtr(libHandle, "unorm2_getNFKDInstance", version);
-            var pGetDecomposition = GetFunctionPtr(libHandle, "unorm2_getDecomposition", version);
-            var getNFCinstance = Marshal.GetDelegateForFunctionPointer<GetNormalizerInstanceDelegate>(pGetNFCInstance);
-            var getNFDinstance = Marshal.GetDelegateForFunctionPointer<GetNormalizerInstanceDelegate>(pGetNFDInstance);
-            var getNFKCinstance = Marshal.GetDelegateForFunctionPointer<GetNormalizerInstanceDelegate>(pGetNFKCInstance);
-            var getNFKDinstance = Marshal.GetDelegateForFunctionPointer<GetNormalizerInstanceDelegate>(pGetNFKDInstance);
-            var getDecomposition = Marshal.GetDelegateForFunctionPointer<GetCompositionDelegate>(pGetDecomposition);
-            return new DynamicLibicu(
-                getNFCinstance,
-                getNFDinstance,
-                getNFKCinstance,
-                getNFKDinstance,
-                getDecomposition
-            );
+            throw new InvalidOperationException($"Failed to load libicu from all sources Consider providing search path through LIBICU_PATH environment variable.");
 
             static IntPtr GetFunctionPtr(IntPtr libHandle, string name, decimal version)
             {
                 if (!NativeLibrary.TryGetExport(libHandle, name, out var pFun))
                 {
-                    if (!NativeLibrary.TryGetExport(libHandle, $"{name}_{(int)version}", out pFun))
+                    if (!NativeLibrary.TryGetExport(libHandle, $"{name}_{(int)Math.Floor(version)}", out pFun))
                     {
                         throw new InvalidOperationException($"Failed to get {name} from libicu.");
                     }
@@ -146,20 +115,14 @@ namespace NCoreUtils.Text.Internal
 
         public ILibicu GetInstance()
         {
-            if (null != _instance)
+            if (_instance is null)
             {
-                return _instance;
-            }
-            lock (_sync)
-            {
-                if (null != _instance)
+                lock (_sync)
                 {
-                    return _instance;
+                    return _instance ??= LoadInstance();
                 }
-                // load
-                _instance = LoadInstance();
-                return _instance;
             }
+            return _instance;
         }
     }
 }

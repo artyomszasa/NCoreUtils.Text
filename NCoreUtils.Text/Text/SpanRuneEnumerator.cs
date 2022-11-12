@@ -8,50 +8,49 @@
 
 using System;
 
-namespace NCoreUtils.Text
+namespace NCoreUtils.Text;
+
+// An enumerator for retrieving System.Text.Rune instances from a ROS<char>.
+// Methods are pattern-matched by compiler to allow using foreach pattern.
+public ref struct SpanRuneEnumerator
 {
-    // An enumerator for retrieving System.Text.Rune instances from a ROS<char>.
-    // Methods are pattern-matched by compiler to allow using foreach pattern.
-    public ref struct SpanRuneEnumerator
+    private ReadOnlySpan<char> _remaining;
+    private Rune _current;
+
+    internal SpanRuneEnumerator(ReadOnlySpan<char> buffer)
     {
-        private ReadOnlySpan<char> _remaining;
-        private Rune _current;
+        _remaining = buffer;
+        _current = default;
+    }
 
-        internal SpanRuneEnumerator(ReadOnlySpan<char> buffer)
+    public Rune Current => _current;
+
+    public SpanRuneEnumerator GetEnumerator() => this;
+
+    public bool MoveNext()
+    {
+        if (_remaining.IsEmpty)
         {
-            _remaining = buffer;
+            // reached the end of the buffer
             _current = default;
+            return false;
         }
 
-        public Rune Current => _current;
-
-        public SpanRuneEnumerator GetEnumerator() => this;
-
-        public bool MoveNext()
+        int scalarValue = Rune.ReadFirstRuneFromUtf16Buffer(_remaining);
+        if (scalarValue < 0)
         {
-            if (_remaining.IsEmpty)
-            {
-                // reached the end of the buffer
-                _current = default;
-                return false;
-            }
-
-            int scalarValue = Rune.ReadFirstRuneFromUtf16Buffer(_remaining);
-            if (scalarValue < 0)
-            {
-                // replace invalid sequences with U+FFFD
-                scalarValue = Rune.ReplacementChar.Value;
-            }
-
-            // In UTF-16 specifically, invalid sequences always have length 1, which is the same
-            // length as the replacement character U+FFFD. This means that we can always bump the
-            // next index by the current scalar's UTF-16 sequence length. This optimization is not
-            // generally applicable; for example, enumerating scalars from UTF-8 cannot utilize
-            // this same trick.
-
-            _current = Rune.UnsafeCreate((uint)scalarValue);
-            _remaining = _remaining.Slice(_current.Utf16SequenceLength);
-            return true;
+            // replace invalid sequences with U+FFFD
+            scalarValue = Rune.ReplacementChar.Value;
         }
+
+        // In UTF-16 specifically, invalid sequences always have length 1, which is the same
+        // length as the replacement character U+FFFD. This means that we can always bump the
+        // next index by the current scalar's UTF-16 sequence length. This optimization is not
+        // generally applicable; for example, enumerating scalars from UTF-8 cannot utilize
+        // this same trick.
+
+        _current = Rune.UnsafeCreate((uint)scalarValue);
+        _remaining = _remaining.Slice(_current.Utf16SequenceLength);
+        return true;
     }
 }

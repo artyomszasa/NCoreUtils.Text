@@ -1,0 +1,12 @@
+﻿@page "/"
+@inject IStringSimplifier Simplifier
+
+<PageTitle>Index</PageTitle>
+
+<InputText @bind-Value=@(Value) />
+
+<div>@(Simplifier.Simplify(Value))</div>
+
+@code {
+    private string Value { get; set; } = string.Empty;
+}

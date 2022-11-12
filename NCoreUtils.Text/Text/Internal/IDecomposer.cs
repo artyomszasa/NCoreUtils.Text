@@ -1,9 +1,8 @@
 using System;
 
-namespace NCoreUtils.Text.Internal
+namespace NCoreUtils.Text.Internal;
+
+public interface IDecomposer
 {
-    public interface IDecomposer
-    {
-        bool TryDecompose(int unicodeScalar, Span<char> decomposition, out int written);
-    }
+    bool TryDecompose(int unicodeScalar, Span<char> decomposition, out int written);
 }

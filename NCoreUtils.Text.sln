@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCoreUtils.Text.Wasm", "NCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCoreUtils.Text.TrimCheck", "NCoreUtils.Text.TrimCheck\NCoreUtils.Text.TrimCheck.csproj", "{F1B9B8E1-24C9-4FBE-AAB3-69DD187C7C79}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCoreUtils.Text.Wasm.Debug", "NCoreUtils.Text.Wasm.Debug\NCoreUtils.Text.Wasm.Debug.csproj", "{2F5A752E-D88B-455A-814A-F4299899A163}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,5 +116,17 @@ Global
 		{F1B9B8E1-24C9-4FBE-AAB3-69DD187C7C79}.Release|x64.Build.0 = Release|Any CPU
 		{F1B9B8E1-24C9-4FBE-AAB3-69DD187C7C79}.Release|x86.ActiveCfg = Release|Any CPU
 		{F1B9B8E1-24C9-4FBE-AAB3-69DD187C7C79}.Release|x86.Build.0 = Release|Any CPU
+		{2F5A752E-D88B-455A-814A-F4299899A163}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F5A752E-D88B-455A-814A-F4299899A163}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F5A752E-D88B-455A-814A-F4299899A163}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2F5A752E-D88B-455A-814A-F4299899A163}.Debug|x64.Build.0 = Debug|Any CPU
+		{2F5A752E-D88B-455A-814A-F4299899A163}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2F5A752E-D88B-455A-814A-F4299899A163}.Debug|x86.Build.0 = Debug|Any CPU
+		{2F5A752E-D88B-455A-814A-F4299899A163}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F5A752E-D88B-455A-814A-F4299899A163}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F5A752E-D88B-455A-814A-F4299899A163}.Release|x64.ActiveCfg = Release|Any CPU
+		{2F5A752E-D88B-455A-814A-F4299899A163}.Release|x64.Build.0 = Release|Any CPU
+		{2F5A752E-D88B-455A-814A-F4299899A163}.Release|x86.ActiveCfg = Release|Any CPU
+		{2F5A752E-D88B-455A-814A-F4299899A163}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
