@@ -19,6 +19,7 @@ namespace NCoreUtils.Text.Unit
         [InlineData("groß", "gross")]
         [InlineData("українських студентів", "ukrainskih-studentiv")]
         [InlineData("émosogatógép😍😍😍", "emosogatogep")]
+        [InlineData("Straßentheater", "strassentheater")]
         public void Default(string input, string expected)
         {
             var actual = DynamicStringSimplifier.Simplify(input);
