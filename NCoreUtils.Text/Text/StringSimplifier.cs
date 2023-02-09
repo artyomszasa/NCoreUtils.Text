@@ -25,6 +25,8 @@ namespace NCoreUtils.Text
 
         private readonly Dictionary<Rune, string> _map;
 
+        private int MaxMappedLength { get; }
+
         public char Delimiter { get; }
 
         public StringSimplifier(ILibicu icu, char delimiter, IEnumerable<IRuneSimplifier> runeSimplifiers)
@@ -38,15 +40,19 @@ namespace NCoreUtils.Text
             {
                 throw new ArgumentNullException(nameof(runeSimplifiers));
             }
+            var max = 1;
             var map = new Dictionary<Rune, string>();
             foreach (var runeSimplifier in runeSimplifiers)
             {
                 foreach (var key in runeSimplifier.Keys)
                 {
-                    map[key] = runeSimplifier[key];
+                    var mapped = runeSimplifier[key];
+                    map[key] = mapped;
+                    max = Math.Max(max, mapped.Length);
                 }
             }
             _map = map;
+            MaxMappedLength = max;
             Delimiter = delimiter;
         }
 
@@ -127,7 +133,7 @@ namespace NCoreUtils.Text
         }
 
         public int GetMaxCharCount(int sourceCharCount)
-            => sourceCharCount;
+            => MaxMappedLength * sourceCharCount;
 
         public bool TrySimplify(ReadOnlySpan<char> source, Span<char> destination, out int written)
         {
