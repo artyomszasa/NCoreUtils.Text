@@ -56,7 +56,7 @@ public class KebabCaseNamingConvention : INamingConvention
                             return false;
                         }
                     }
-                    if (!builder.TryAppend(Rune.ToLower(rune, culture)))
+                    if (!builder.TryAppendRune(Rune.ToLower(rune, culture)))
                     {
                         written = default;
                         return false;
@@ -66,7 +66,7 @@ public class KebabCaseNamingConvention : INamingConvention
                 else
                 {
                     // just copy it...
-                    if (!builder.TryAppend(rune))
+                    if (!builder.TryAppendRune(rune))
                     {
                         written = default;
                         return false;

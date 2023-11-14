@@ -23,6 +23,11 @@ internal readonly struct Pattern
 
     public bool Match(ReadOnlySpan<char> input, out decimal version)
     {
+        if (input.Length == Prefix.Length + Suffix.Length && Eq(input[..Prefix.Length], Prefix) && Eq(input[Prefix.Length..], Suffix))
+        {
+            version = 0;
+            return true;
+        }
         var prefixLength = Prefix.Length;
         if (Suffix.Length == 0)
         {
@@ -34,7 +39,7 @@ internal readonly struct Pattern
             return decimal.TryParse(input[prefixLength..], NumberStyles.Float, CultureInfo.InvariantCulture, out version);
         }
         var suffixLength = Suffix.Length;
-        if (input.Length < MinLength || !Eq(Prefix, input[..(Prefix.Length)]) || !Eq(Suffix, input[^suffixLength..]))
+        if (input.Length < MinLength || !Eq(Prefix, input[..Prefix.Length]) || !Eq(Suffix, input[^suffixLength..]))
         {
             version = default;
             return false;

@@ -7,7 +7,7 @@ namespace NCoreUtils.Text;
 
 public static class SpanBuilderRuneExtensions
 {
-    public static bool TryAppend(this ref SpanBuilder builder, Rune rune)
+    public static bool TryAppendRune(this ref SpanBuilder builder, Rune rune)
     {
         Span<char> buffer = stackalloc char[4];
         var size = rune.EncodeToUtf16(buffer);

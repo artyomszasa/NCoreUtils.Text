@@ -71,7 +71,7 @@ public class StringSimplifier : IStringSimplifier
             }
             else
             {
-                if (!SpanBuilderRuneExtensions.TryAppend(ref builder, r)) { return false; }
+                if (!SpanBuilderRuneExtensions.TryAppendRune(ref builder, r)) { return false; }
                 isDelimiter = false;
             }
         }

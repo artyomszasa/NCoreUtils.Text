@@ -45,7 +45,7 @@ public class CamelCaseNamingConvention : INamingConvention
                 {
                     // this rune starts a word --> first word starts with lowercase char, other words start with
                     // uppercase character
-                    if (!builder.TryAppend(0 == builder.Length ? Rune.ToLower(rune, culture) : Rune.ToUpper(rune, culture)))
+                    if (!builder.TryAppendRune(0 == builder.Length ? Rune.ToLower(rune, culture) : Rune.ToUpper(rune, culture)))
                     {
                         written = default;
                         return false;
@@ -54,7 +54,7 @@ public class CamelCaseNamingConvention : INamingConvention
                 }
                 else
                 {
-                    if (!builder.TryAppend(rune))
+                    if (!builder.TryAppendRune(rune))
                     {
                         written = default;
                         return false;

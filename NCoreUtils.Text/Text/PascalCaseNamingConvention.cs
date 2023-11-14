@@ -45,7 +45,7 @@ public class PascalCaseNamingConvention : INamingConvention
                 if (isDelimiter)
                 {
                     // this rune starts a word --> words start with uppercase character unconditionally
-                    if (!builder.TryAppend(Rune.ToUpper(rune, culture)))
+                    if (!builder.TryAppendRune(Rune.ToUpper(rune, culture)))
                     {
                         written = default;
                         return false;
@@ -54,7 +54,7 @@ public class PascalCaseNamingConvention : INamingConvention
                 }
                 else
                 {
-                    if (!builder.TryAppend(rune))
+                    if (!builder.TryAppendRune(rune))
                     {
                         written = default;
                         return false;
