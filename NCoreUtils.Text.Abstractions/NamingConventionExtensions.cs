@@ -12,17 +12,21 @@ public static class NamingConventionExtensions
 
     public static string Apply(this INamingConvention convention, string source)
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(source);
+#else
         if (source is null)
         {
             throw new ArgumentNullException(nameof(source));
         }
+#endif
         if (source.Length == 0)
         {
             return string.Empty;
         }
         var maxSize = convention.GetMaxCharCount(source.Length);
         string result;
-        // NOTE: stack allocation only used when buffer size < 32k.
+        // NOTE: stack allocation only used when buffer size < 16k.
         if (maxSize <= 16 * 1024)
         {
             Span<char> buffer = stackalloc char[maxSize];

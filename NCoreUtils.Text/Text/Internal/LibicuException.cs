@@ -3,7 +3,9 @@ using System.Runtime.Serialization;
 
 namespace NCoreUtils.Text.Internal;
 
+#if !NET8_0_OR_GREATER
 [Serializable]
+#endif
 public class LibicuException : Exception
 {
     private static string FormatErrorMessage(UErrorCode errorCode)
@@ -13,6 +15,7 @@ public class LibicuException : Exception
 
     public LibicuException(UErrorCode errorCode) : base(FormatErrorMessage(errorCode)) { }
 
+#if !NET8_0_OR_GREATER
     protected LibicuException(SerializationInfo info, StreamingContext context)
         : base(info, context)
     {
@@ -24,4 +27,5 @@ public class LibicuException : Exception
         base.GetObjectData(info, context);
         info.AddValue(nameof(UErrorCode), (int)ErroCode);
     }
+#endif
 }

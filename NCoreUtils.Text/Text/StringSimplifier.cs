@@ -11,10 +11,10 @@ namespace NCoreUtils.Text;
 
 public class StringSimplifier : IStringSimplifier
 {
-    private const int CharA = (int)'a';
-    private const int CharZ = (int)'z';
-    private const int Char0 = (int)'0';
-    private const int Char9 = (int)'9';
+    private const int CharA = 'a';
+    private const int CharZ = 'z';
+    private const int Char0 = '0';
+    private const int Char9 = '9';
 
     private static bool IsSimple(Rune rune)
         => (CharA <= rune.Value && CharZ >= rune.Value) || (Char0 <= rune.Value && Char9 >= rune.Value);
@@ -30,24 +30,27 @@ public class StringSimplifier : IStringSimplifier
     public StringSimplifier(IDecomposer decomposer, char delimiter, IEnumerable<IRuneSimplifier> runeSimplifiers)
     {
         Decomposer = decomposer ?? throw new ArgumentNullException(nameof(decomposer));
-        if (runeSimplifiers is null)
+        if (runeSimplifiers is not null)
+        {
+            var max = 1;
+            var map = new Dictionary<Rune, string>();
+            foreach (var runeSimplifier in runeSimplifiers)
+            {
+                foreach (var key in runeSimplifier.Keys)
+                {
+                    var mapped = runeSimplifier[key];
+                    map[key] = mapped;
+                    max = Math.Max(max, mapped.Length);
+                }
+            }
+            RuneMap = map;
+            MaxMappedLength = max;
+            Delimiter = delimiter;
+        }
+        else
         {
             throw new ArgumentNullException(nameof(runeSimplifiers));
         }
-        var max = 1;
-        var map = new Dictionary<Rune, string>();
-        foreach (var runeSimplifier in runeSimplifiers)
-        {
-            foreach (var key in runeSimplifier.Keys)
-            {
-                var mapped = runeSimplifier[key];
-                map[key] = mapped;
-                max = Math.Max(max, mapped.Length);
-            }
-        }
-        RuneMap = map;
-        MaxMappedLength = max;
-        Delimiter = delimiter;
     }
 
     public StringSimplifier(IDecomposer decomposer, char delimiter, params IRuneSimplifier[] runeSimplifiers)

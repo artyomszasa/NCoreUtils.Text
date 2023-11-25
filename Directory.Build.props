@@ -1,14 +1,17 @@
 <Project>
   <PropertyGroup>
-    <LangVersion>11.0</LangVersion>
+    <LangVersion>12.0</LangVersion>
     <Nullable>enable</Nullable>
-    <Version>7.0.1</Version>
+    <Version>8.0.0</Version>
     <Fx3NugetVersion>3.1.16</Fx3NugetVersion>
     <Fx6NugetVersion>6.0.0</Fx6NugetVersion>
     <Fx7NugetVersion>7.0.0</Fx7NugetVersion>
+    <Fx8NugetVersion>8.0.0</Fx8NugetVersion>
     <FxNugetVersion Condition=" '$(TargetFramework)' == 'net6.0' ">$(Fx6NugetVersion)</FxNugetVersion>
     <FxNugetVersion Condition=" '$(TargetFramework)' == 'net7.0' ">$(Fx7NugetVersion)</FxNugetVersion>
-    <FxNugetVersion Condition=" '$(TargetFramework)' != 'net6.0' And '$(TargetFramework)' != 'net7.0' ">$(Fx3NugetVersion)</FxNugetVersion>
+    <FxNugetVersion Condition=" '$(TargetFramework)' == 'net8.0' ">$(Fx8NugetVersion)</FxNugetVersion>
+    <FxNugetVersion Condition=" '$(TargetFramework)' != 'net6.0' And '$(TargetFramework)' != 'net7.0' And '$(TargetFramework)' != 'net8.0' ">$(Fx3NugetVersion)</FxNugetVersion>
     <IsTrimmable>true</IsTrimmable>
+    <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
 </Project>

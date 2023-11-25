@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace NCoreUtils.Text.Internal;
 
-public readonly struct LibicuWrapper
+public readonly struct LibicuWrapper(ILibicu instance)
 {
     private static IntPtr GetNormalizer(ILibicu icu)
     {
@@ -15,15 +15,9 @@ public readonly struct LibicuWrapper
         throw new LibicuException(err);
     }
 
-    internal readonly ILibicu _instance;
+    internal readonly ILibicu _instance = instance;
 
-    internal readonly IntPtr _pNormalizer;
-
-    public LibicuWrapper(ILibicu instance)
-    {
-        _instance = instance;
-        _pNormalizer = GetNormalizer(instance);
-    }
+    internal readonly IntPtr _pNormalizer = GetNormalizer(instance);
 
     internal unsafe int Decompose(int value, Span<char> decomposition, out UErrorCode err)
     {

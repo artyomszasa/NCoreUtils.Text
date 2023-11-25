@@ -19,11 +19,8 @@ public static class ServiceCollectionTextExtensions
     {
         return services.AddSingleton<IStringSimplifier>(serviceProvider =>
         {
-            var decomposer = serviceProvider.GetService<IDecomposer>();
-            if (decomposer is null)
-            {
-                throw new InvalidOperationException($"Decomposer has not been registered, use one of NCoreUtils.Text.Libicu.Loader, NCoreUtils.Text.Libicu.Static or NCoreUtils.Text.Wasm package to add decomposition provider.");
-            }
+            var decomposer = serviceProvider.GetService<IDecomposer>()
+                ?? throw new InvalidOperationException($"Decomposer has not been registered, use one of NCoreUtils.Text.Libicu.Loader, NCoreUtils.Text.Libicu.Static or NCoreUtils.Text.Wasm package to add decomposition provider.");
             return new StringSimplifier(decomposer, delimiter, runeSimplifiers);
         });
     }
