@@ -109,9 +109,9 @@ namespace NCoreUtils.Text.Integration
             return output.ToString();
         }
 
-        // [InlineData("net6.0", "mcr.microsoft.com/dotnet/sdk:6.0.403-bullseye-slim-amd64", "mcr.microsoft.com/dotnet/6.0.11-bullseye-slim-amd64", "linux-x64", "")]
-        // [InlineData("net7.0", "mcr.microsoft.com/dotnet/sdk:7.0.100-bullseye-slim-amd64", "mcr.microsoft.com/dotnet/runtime-deps:7.0.0-bullseye-slim-amd64", "linux-x64", "")]
-        [InlineData("net8.0", "mcr.microsoft.com/dotnet/sdk:8.0.100-1-bookworm-slim", "mcr.microsoft.com/dotnet/runtime-deps:8.0.0-bookworm-slim", "linux-x64", "")]
+        // [InlineData("net6.0", "mcr.microsoft.com/dotnet/sdk:10.0.102-noble-aot", "mcr.microsoft.com/dotnet/6.0.11-bullseye-slim-amd64", "linux-x64", "")]
+        [InlineData("net8.0", "mcr.microsoft.com/dotnet/sdk:10.0.102-noble-aot", "mcr.microsoft.com/dotnet/runtime-deps:8.0.0-bookworm-slim", "linux-x64", "")]
+        [InlineData("net10.0", "mcr.microsoft.com/dotnet/sdk:10.0.102-noble-aot", "mcr.microsoft.com/dotnet/runtime-deps:10.0.2-noble-chiseled-extra", "linux-x64", "")]
         [Theory]
         public void RunInDocker(string framework, string tagSdk, string tagRuntime, string rid, string run)
         {

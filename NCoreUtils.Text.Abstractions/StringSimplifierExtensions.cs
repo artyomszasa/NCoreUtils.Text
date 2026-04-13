@@ -1,4 +1,3 @@
-using System;
 using System.Buffers;
 
 namespace NCoreUtils;
@@ -37,7 +36,8 @@ public static class StringSimplifierExtensions
             result = new string(buffer[..written]);
 #endif
         }
-        else
+        // NOTE: use pooled buffers only used when buffer size < 32k.
+        else if (maxSize <= 32 * 1024)
         {
             var buffer = ArrayPool<char>.Shared.Rent(maxSize);
             try
@@ -49,6 +49,12 @@ public static class StringSimplifierExtensions
             {
                 ArrayPool<char>.Shared.Return(buffer);
             }
+        }
+        else
+        {
+            var buffer = new char[maxSize];
+            var written = simplifier.Simplify(source.AsSpan(), buffer.AsSpan());
+            result = new string(buffer, 0, written);
         }
         return result;
     }

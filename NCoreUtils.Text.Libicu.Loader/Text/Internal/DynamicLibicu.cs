@@ -1,18 +1,11 @@
-using System;
-
 namespace NCoreUtils.Text.Internal;
 
-public unsafe class DynamicLibicu : ILibicu
+public unsafe class DynamicLibicu(GetNormalizerInstanceDelegate getNFDinstance, GetCompositionDelegate getDecomposition)
+    : ILibicu
 {
-    private readonly GetNormalizerInstanceDelegate _getNFDinstance;
+    private readonly GetNormalizerInstanceDelegate _getNFDinstance = getNFDinstance;
 
-    private readonly GetCompositionDelegate _getDecomposition;
-
-    public DynamicLibicu(GetNormalizerInstanceDelegate getNFDinstance, GetCompositionDelegate getDecomposition)
-    {
-        _getNFDinstance = getNFDinstance;
-        _getDecomposition = getDecomposition;
-    }
+    private readonly GetCompositionDelegate _getDecomposition = getDecomposition;
 
     public int UnmanagedDecompose(IntPtr pNormalizer, int c, IntPtr decomposition, int capacity, out UErrorCode err)
     {
