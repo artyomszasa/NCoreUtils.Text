@@ -3,6 +3,10 @@
     <TargetFrameworks>net10.0;net8.0;net6.0;netstandard2.1</TargetFrameworks>
     <AllowUnsafeBlocks Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net7.0'))">true</AllowUnsafeBlocks>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisMode>All</AnalysisMode>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\NCoreUtils.Text\NCoreUtils.Text.csproj" />
   </ItemGroup>

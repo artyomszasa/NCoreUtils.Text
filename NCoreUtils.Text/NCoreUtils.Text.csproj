@@ -4,6 +4,10 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RootNamespace>NCoreUtils</RootNamespace>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisMode>All</AnalysisMode>
+  </PropertyGroup>
   <ItemGroup Condition=" ! $(TargetFramework.StartsWith('netstandard2')) ">
     <Compile Remove="Text\Rune.cs" />
     <Compile Remove="Text\UnicodeUtility.cs" />

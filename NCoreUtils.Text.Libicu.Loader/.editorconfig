@@ -1,0 +1,14 @@
+[*.cs]
+
+# CA1711: Delegate names mirror native entry-point semantics
+dotnet_diagnostic.CA1711.severity = silent
+# CA1848: LoggerMessage would add unnecessary ceremony in the loader diagnostics
+dotnet_diagnostic.CA1848.severity = silent
+# CA1873: Logging arguments here are intentionally left inline
+dotnet_diagnostic.CA1873.severity = silent
+# CA1859: Interface return type is intentional for the loader contract
+dotnet_diagnostic.CA1859.severity = silent
+
+[Text/Internal/LibicuResolver.cs]
+# CA1031: Loader probes intentionally log and continue on arbitrary failures
+dotnet_diagnostic.CA1031.severity = silent

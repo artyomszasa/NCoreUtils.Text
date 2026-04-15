@@ -21,7 +21,7 @@ namespace NCoreUtils.Text.Integration
 
         private static void Build(string targetName, string dockerfile, string wd)
         {
-            var process = new Process();
+            using var process = new Process();
             var startInfo = new ProcessStartInfo
             {
                 WindowStyle = ProcessWindowStyle.Hidden,
@@ -39,7 +39,7 @@ namespace NCoreUtils.Text.Integration
 
         private static void RmImage(string targetName)
         {
-            var process = new Process();
+            using var process = new Process();
             var startInfo = new ProcessStartInfo
             {
                 WindowStyle = ProcessWindowStyle.Hidden,
@@ -61,7 +61,7 @@ namespace NCoreUtils.Text.Integration
             using var error = new StringWriter();
             using var outputDone = new ManualResetEventSlim(false);
             using var errorDone = new ManualResetEventSlim(false);
-            var process = new Process();
+            using var process = new Process();
             var startInfo = new ProcessStartInfo
             {
                 WindowStyle = ProcessWindowStyle.Hidden,
@@ -119,11 +119,11 @@ namespace NCoreUtils.Text.Integration
             try
             {
                 var dockerfileTemplate = GetDockerfileTemplate()
-                    .Replace("%TAG_SDK%", tagSdk)
-                    .Replace("%TAG_RUNTIME%", tagRuntime)
-                    .Replace("%RID%", rid)
-                    .Replace("%RUN%", run)
-                    .Replace("%FW%", framework);
+                    .Replace("%TAG_SDK%", tagSdk, StringComparison.Ordinal)
+                    .Replace("%TAG_RUNTIME%", tagRuntime, StringComparison.Ordinal)
+                    .Replace("%RID%", rid, StringComparison.Ordinal)
+                    .Replace("%RUN%", run, StringComparison.Ordinal)
+                    .Replace("%FW%", framework, StringComparison.Ordinal);
                 File.WriteAllText(dockerfile, dockerfileTemplate, _utf8);
                 var imageName = $"ncoreutils-text-integration-check-{rid}:0.0.0";
                 var path = Environment.CurrentDirectory;

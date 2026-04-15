@@ -5,12 +5,18 @@ namespace NCoreUtils;
 public static class NamingConventionExtensions
 {
     public static int Apply(this INamingConvention convention, ReadOnlySpan<char> source, Span<char> destination)
-        => convention.TryApply(source, destination, out var written)
+        => convention is null
+            ? throw new ArgumentNullException(nameof(convention))
+            : convention.TryApply(source, destination, out var written)
             ? written
             : throw new ArgumentException("Buffer is insufficient.", nameof(destination));
 
     public static string Apply(this INamingConvention convention, string source)
     {
+        if (convention is null)
+        {
+            throw new ArgumentNullException(nameof(convention));
+        }
 #if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(source);
 #else

@@ -1,4 +1,3 @@
-using System;
 using System.Runtime.Serialization;
 
 namespace NCoreUtils.Text.Internal;
@@ -13,7 +12,16 @@ public class LibicuException : Exception
 
     public UErrorCode ErroCode { get; }
 
-    public LibicuException(UErrorCode errorCode) : base(FormatErrorMessage(errorCode)) { }
+    public LibicuException() { }
+
+    public LibicuException(string message) : base(message) { }
+
+    public LibicuException(string message, Exception innerException) : base(message, innerException) { }
+
+    public LibicuException(UErrorCode errorCode) : base(FormatErrorMessage(errorCode))
+    {
+        ErroCode = errorCode;
+    }
 
 #if !NET8_0_OR_GREATER
     protected LibicuException(SerializationInfo info, StreamingContext context)
