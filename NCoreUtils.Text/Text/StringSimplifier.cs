@@ -29,28 +29,21 @@ public class StringSimplifier : IStringSimplifier
 
     public StringSimplifier(IDecomposer decomposer, char delimiter, IEnumerable<IRuneSimplifier> runeSimplifiers)
     {
-        Decomposer = decomposer ?? throw new ArgumentNullException(nameof(decomposer));
-        if (runeSimplifiers is not null)
+        Decomposer = decomposer.ThrowIfNull();
+        var max = 1;
+        var map = new Dictionary<Rune, string>();
+        foreach (var runeSimplifier in runeSimplifiers.ThrowIfNull())
         {
-            var max = 1;
-            var map = new Dictionary<Rune, string>();
-            foreach (var runeSimplifier in runeSimplifiers)
+            foreach (var key in runeSimplifier.Keys)
             {
-                foreach (var key in runeSimplifier.Keys)
-                {
-                    var mapped = runeSimplifier[key];
-                    map[key] = mapped;
-                    max = Math.Max(max, mapped.Length);
-                }
+                var mapped = runeSimplifier[key];
+                map[key] = mapped;
+                max = Math.Max(max, mapped.Length);
             }
-            RuneMap = map;
-            MaxMappedLength = max;
-            Delimiter = delimiter;
         }
-        else
-        {
-            throw new ArgumentNullException(nameof(runeSimplifiers));
-        }
+        RuneMap = map;
+        MaxMappedLength = max;
+        Delimiter = delimiter;
     }
 
     public StringSimplifier(IDecomposer decomposer, char delimiter, params IRuneSimplifier[] runeSimplifiers)

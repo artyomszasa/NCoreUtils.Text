@@ -18,6 +18,17 @@
   <ItemGroup Condition=" '$(TargetFramework)' != 'netstandard2.0' ">
     <Compile Remove="Compat\**" />
   </ItemGroup>
+  <!-- NOTE: NET Standard polyfill -->
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <Compile Include="..\shared\CodeAnalysis\**" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' Or '$(TargetFramework)' == 'netstandard2.1' ">
+    <Compile Include="..\shared\CompilerServices\**" />
+  </ItemGroup>
+  <!-- NOTE: Common -->
+  <ItemGroup>
+    <Compile Include="..\shared\Check.cs" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NCoreUtils.Text.Abstractions\NCoreUtils.Text.Abstractions.csproj" />
   </ItemGroup>
