@@ -5,20 +5,14 @@ namespace NCoreUtils;
 public static class StringSimplifierExtensions
 {
     public static int Simplify(this IStringSimplifier simplifier, ReadOnlySpan<char> source, Span<char> destination)
-        => simplifier.TrySimplify(source, destination, out var written)
+        => simplifier.ThrowIfNull().TrySimplify(source, destination, out var written)
             ? written
             : throw new ArgumentException("Buffer is insufficient.", nameof(destination));
 
     public static string Simplify(this IStringSimplifier simplifier, string source)
     {
-#if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(source);
-#else
-        if (source is null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
-#endif
+        simplifier.ThrowIfNull();
+        source.ThrowIfNull();
         if (source.Length == 0)
         {
             return string.Empty;

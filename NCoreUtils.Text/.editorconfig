@@ -1,0 +1,11 @@
+[Text/Internal/UErrorCode.cs]
+# CA1707: ICU error code names preserve upstream native constants
+dotnet_diagnostic.CA1707.severity = silent
+
+[Text/IRuneSimplifier.cs]
+# CA1043: Rune-based indexer is intentional in this abstraction
+dotnet_diagnostic.CA1043.severity = silent
+
+[Text/Internal/LibIcuWrapper.cs]
+# CA1815: Equality is not meaningful for this low-level wrapper
+dotnet_diagnostic.CA1815.severity = silent

@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 #if !NETSTANDARD2_1
 using System.Text;
 #endif
@@ -49,10 +47,6 @@ public static class RuneSimplifier
 
     public static IRuneSimplifier FromMapping(IEnumerable<KeyValuePair<Rune, string>> mapping, bool merge)
     {
-        if (mapping == null)
-        {
-            throw new ArgumentNullException(nameof(mapping));
-        }
-        return new ExplicitRuneSimplifier(mapping, merge);
+        return new ExplicitRuneSimplifier(mapping.ThrowIfNull(), merge);
     }
 }

@@ -1,7 +1,3 @@
-using System;
-using System.IO;
-using System.Runtime.InteropServices;
-using System.Threading;
 using Microsoft.Extensions.Logging;
 using NCoreUtils.Text.Internal;
 
@@ -38,7 +34,7 @@ namespace NCoreUtils.Text.Unit
             }
         }
 
-        public TestBase()
+        protected TestBase()
         {
             var resolver = new LibicuResolver(new DummyLogger<LibicuResolver>());
             _dynIcu = resolver.GetInstance();

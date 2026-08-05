@@ -13,14 +13,14 @@ var simplifier = new StringSimplifier(decomposer, '-', ServiceCollectionTextExte
 
 Console.WriteLine(simplifier.Simplify("Helló, Wоrld!"));
 
-internal class DummyDisposable : IDisposable
+internal sealed class DummyDisposable : IDisposable
 {
     public static DummyDisposable Singleton { get; } = new();
 
     public void Dispose() { /* noop */ }
 }
 
-internal class DummyLogger<T> : ILogger<T>
+internal sealed class DummyLogger<T> : ILogger<T>
 {
     public IDisposable? BeginScope<TState>(TState state) where TState : notnull
         => DummyDisposable.Singleton;

@@ -1,14 +1,10 @@
-using System;
-using System.Net.Http;
 using System.Runtime.Versioning;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using NCoreUtils;
 using NCoreUtils.Text.Wasm.Debug;
 
-internal class Program
+internal sealed class Program
 {
     [SupportedOSPlatform("browser")]
     private static async Task Main(string[] args)
@@ -20,6 +16,6 @@ internal class Program
         builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
         builder.Services.AddJsInteropDecomposer().AddDefaultStringSimplifier();
 
-        await builder.Build().RunAsync();
+        await builder.Build().RunAsync().ConfigureAwait(false);
     }
 }
